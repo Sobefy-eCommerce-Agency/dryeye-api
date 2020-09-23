@@ -1,0 +1,12 @@
+{
+  "body": "{\"firstName\":\"Charles\",\"lastName\":\"Johnson\"}",
+  "pathParameters": {
+    "patient": "77f45780-fd59-11ea-9167-25c72c2370c1",
+    "user": "superdeep123"
+  },
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

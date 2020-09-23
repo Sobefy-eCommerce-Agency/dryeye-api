@@ -1,0 +1,8 @@
+{
+  "body": "{\"user\":\"superdeep123\",\"firstName\":\"John\",\"lastName\":\"Smith\",\"address\":\"Miami\",\"image\":\"hello.jpg\"}",
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

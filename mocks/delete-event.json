@@ -1,0 +1,11 @@
+{
+  "pathParameters": {
+    "patient": "66ddccb0-fd59-11ea-bee8-7d862166d448",
+    "user": "superdeep123"
+  },
+  "requestContext": {
+    "identity": {
+      "cognitoIdentityId": "USER-SUB-1234"
+    }
+  }
+}

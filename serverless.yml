@@ -95,7 +95,7 @@ functions:
     handler: delete.main
     events:
       - http:
-          path: patients/{id}
+          path: patients/delete
           method: delete
           cors: true
 

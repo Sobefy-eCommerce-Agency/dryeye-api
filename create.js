@@ -32,8 +32,6 @@ export const main = handler(async (event, context) => {
       patient: uuid.v1(),
       createdAt: Date.now(),
     },
-    ConditionExpression:
-      "attribute_not_exists(foo) AND attribute_not_exists(bar)",
   };
 
   await dynamoDb.put(params);

@@ -2,7 +2,7 @@ import handler from "./libs/handler-lib";
 import dynamoDb from "./libs/dynamodb-lib";
 
 export const main = handler(async (event, context) => {
-  const { patient, user } = event.pathParameters;
+  const { patient, user } = event.queryStringParameters;
 
   const params = {
     TableName: process.env.patientsTable,
@@ -17,5 +17,5 @@ export const main = handler(async (event, context) => {
 
   await dynamoDb.delete(params);
 
-  return { status: true };
+  return { status: 200 };
 });

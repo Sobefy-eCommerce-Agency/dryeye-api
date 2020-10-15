@@ -28,7 +28,10 @@ export const main = handler(async (event, context) => {
     // 'UpdateExpression' defines the attributes to be updated
     // 'ExpressionAttributeValues' defines the value in the update expression
     UpdateExpression:
-      "SET firstName = :firstName, lastName = :lastName, email = :email, phone = :phone, birthdate = :birthdate, address = :address, address2 = :address2, city = :city, state = :state, zip = :zip",
+      "SET firstName = :firstName, lastName = :lastName, email = :email, phone = :phone, birthdate = :birthdate, address = :address, address2 = :address2, city = :city, #stateAttribte = :state, zip = :zip",
+    ExpressionAttributeNames: {
+      "#stateAttribte": "state",
+    },
     ExpressionAttributeValues: {
       ":firstName": firstName || null,
       ":lastName": lastName || null,
@@ -49,5 +52,5 @@ export const main = handler(async (event, context) => {
 
   await dynamoDb.update(params);
 
-  return { status: true };
+  return { status: 200 };
 });

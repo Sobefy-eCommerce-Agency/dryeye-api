@@ -48,7 +48,6 @@ functions:
           path: patients
           method: post
           cors: true
-          authorizer: aws_iam
   get:
     # Defines an HTTP API endpoint that calls the main function in get.js
     # - path: url path is /notes/{id}
@@ -59,7 +58,16 @@ functions:
           path: patients/{id}
           method: get
           cors: true
-          authorizer: aws_iam
+  search:
+    # Defines an HTTP API endpoint that calls the main function in get.js
+    # - path: url path is /notes/{id}
+    # - method: GET request
+    handler: search.main
+    events:
+      - http:
+          path: patients/search
+          method: get
+          cors: true
   list:
     # Defines an HTTP API endpoint that calls the main function in list.js
     # - path: url path is /notes
@@ -70,7 +78,6 @@ functions:
           path: patients
           method: get
           cors: true
-          authorizer: aws_iam
   update:
     # Defines an HTTP API endpoint that calls the main function in update.js
     # - path: url path is /notes/{id}
@@ -81,7 +88,6 @@ functions:
           path: patients/{id}
           method: put
           cors: true
-          authorizer: aws_iam
   delete:
     # Defines an HTTP API endpoint that calls the main function in delete.js
     # - path: url path is /notes/{id}
@@ -92,7 +98,6 @@ functions:
           path: patients/{id}
           method: delete
           cors: true
-          authorizer: aws_iam
 
 # Create our resources with separate CloudFormation templates
 resources:

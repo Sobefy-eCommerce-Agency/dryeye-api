@@ -4,21 +4,39 @@ import dynamoDb from "./libs/dynamodb-lib";
 
 export const main = handler(async (event, context) => {
   const data = JSON.parse(event.body);
-  const { user, firstName, lastName, address, image } = data;
+  const {
+    user,
+    firstName,
+    lastName,
+    email,
+    phone,
+    address,
+    address2,
+    city,
+    state,
+    zip,
+  } = data;
   const params = {
     TableName: process.env.patientsTable,
     Item: {
       firstName,
       lastName,
+      email,
+      phone,
       address,
-      image,
+      address2,
+      city,
+      state,
+      zip,
       user,
       patient: uuid.v1(),
       createdAt: Date.now(),
     },
+    ConditionExpression:
+      "attribute_not_exists(foo) AND attribute_not_exists(bar)",
   };
 
   await dynamoDb.put(params);
 
-  return params.Item;
+  return { status: 200 };
 });

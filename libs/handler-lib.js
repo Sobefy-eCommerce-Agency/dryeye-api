@@ -19,7 +19,7 @@ export default function handler(lambda) {
       statusCode,
       body: JSON.stringify(body),
       headers: {
-        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Origin": "https://shop.dryeyerescue.com",
         "Access-Control-Allow-Credentials": true,
       },
     };

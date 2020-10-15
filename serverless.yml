@@ -85,7 +85,7 @@ functions:
     handler: update.main
     events:
       - http:
-          path: patients/{id}
+          path: patients/update
           method: put
           cors: true
   delete:

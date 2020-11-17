@@ -115,6 +115,13 @@ functions:
           path: webhooks/update-customer
           method: post
           cors: true
+  webhook-customers-delete:
+    handler: handlers/webhooks/deleteCustomer.main
+    events:
+      - http:
+          path: webhooks/delete-customer
+          method: post
+          cors: true
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

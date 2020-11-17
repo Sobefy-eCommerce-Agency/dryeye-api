@@ -90,6 +90,7 @@ export const main = handler(async (event) => {
       marketing_opt_in_level,
       admin_graphql_api_id,
       doctor: id.toString(),
+      verified_customer: true,
     },
   };
   await dynamoDb.put(params);

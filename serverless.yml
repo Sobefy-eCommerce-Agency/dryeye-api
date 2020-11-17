@@ -21,7 +21,7 @@ provider:
   environment:
     patientsTable: dryeye-patients
     doctorsTable: dryeye-doctors
-    webhook_verify_hash: ca1906b27fc164b12ee01b5b547ab714369c70ac6f61894d07919a848d07d1e3
+    webhook_verify_hash: 42ab537de45b83b4f3d970d165104b32079d63f80f755ebbd9b482b058bceeaf
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
@@ -108,7 +108,13 @@ functions:
           path: webhooks/create-customer
           method: post
           cors: true
-
+  webhook-customers-update:
+    handler: handlers/webhooks/updateCustomer.main
+    events:
+      - http:
+          path: webhooks/update-customer
+          method: post
+          cors: true
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

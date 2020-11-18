@@ -122,6 +122,13 @@ functions:
           path: webhooks/delete-customer
           method: post
           cors: true
+  doctors-get:
+    handler: handlers/doctors/getDoctor.main
+    events:
+      - http:
+          path: doctors/get-doctors
+          method: get
+          cors: true
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

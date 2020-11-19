@@ -65,7 +65,7 @@ export const main = handler(async (event) => {
     admin_graphql_api_id,
   } = data;
   const params = {
-    TableName: process.env.doctorsTable,
+    TableName: process.env.doctors_table,
     Item: {
       email,
       accepts_marketing,

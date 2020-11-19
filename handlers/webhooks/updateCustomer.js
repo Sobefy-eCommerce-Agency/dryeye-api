@@ -58,7 +58,7 @@ export const main = handler(async (event) => {
   } = data;
 
   const params = {
-    TableName: process.env.doctorsTable,
+    TableName: process.env.doctors_table,
     Key: {
       doctor: id.toString(),
     },

@@ -18,7 +18,7 @@ export const main = handler(async (event, context) => {
     zip,
   } = data;
   const params = {
-    TableName: process.env.patientsTable,
+    TableName: process.env.patients_table,
     Item: {
       firstName,
       lastName,

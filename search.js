@@ -4,7 +4,7 @@ import dynamoDb from "./libs/dynamodb-lib";
 export const main = handler(async (event, context) => {
   const { term, user } = event.queryStringParameters;
   const params = {
-    TableName: process.env.patientsTable,
+    TableName: process.env.patients_table,
     KeyConditionExpression: "#userAttribute = :user",
     FilterExpression: "begins_with(firstName, :term)",
     ExpressionAttributeNames: {

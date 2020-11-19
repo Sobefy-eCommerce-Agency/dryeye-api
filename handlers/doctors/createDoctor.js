@@ -13,7 +13,7 @@ export const main = handler(async (event) => {
     verified_customer,
   } = data;
   const params = {
-    TableName: process.env.doctorsTable,
+    TableName: process.env.doctors_table,
     Item: {
       email,
       phone,

@@ -126,8 +126,15 @@ functions:
     handler: handlers/doctors/getDoctor.main
     events:
       - http:
-          path: doctors/get-doctors
+          path: doctors
           method: get
+          cors: true
+  doctors-create:
+    handler: handlers/doctors/createDoctor.main
+    events:
+      - http:
+          path: doctors
+          method: post
           cors: true
 # Create our resources with separate CloudFormation templates
 resources:

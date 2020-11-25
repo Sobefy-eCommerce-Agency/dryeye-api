@@ -158,6 +158,13 @@ functions:
           path: practices
           method: put
           cors: true
+  practices-delete:
+    handler: handlers/practices/deletePractice.main
+    events:
+      - http:
+          path: practices
+          method: delete
+          cors: true
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

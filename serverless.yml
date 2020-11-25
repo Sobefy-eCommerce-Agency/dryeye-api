@@ -144,6 +144,13 @@ functions:
           path: practices
           method: get
           cors: true
+  practices-create:
+    handler: handlers/practices/createPractice.main
+    events:
+      - http:
+          path: practices
+          method: post
+          cors: true
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

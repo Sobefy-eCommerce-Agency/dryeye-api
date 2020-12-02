@@ -22,7 +22,6 @@ provider:
     patients_table: dryeye-patients
     doctors_table: dryeye-doctors
     practices_table: dryeye-practices
-    doctors_practices_table: dryeye-doctors-practices
     webhook_verify_hash: 42ab537de45b83b4f3d970d165104b32079d63f80f755ebbd9b482b058bceeaf
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.

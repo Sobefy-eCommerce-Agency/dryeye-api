@@ -2,8 +2,9 @@ import * as uuid from "uuid";
 import handler from "../../libs/doctors-handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
 
-export const main = handler(async (event, context) => {
+export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
+  const practiceID = uuid.v1();
   const {
     doctor,
     name,
@@ -15,7 +16,7 @@ export const main = handler(async (event, context) => {
     stateName,
     zip,
   } = data;
-  const params = {
+  const createPracticeParams = {
     TableName: process.env.practices_table,
     Item: {
       name,
@@ -26,13 +27,42 @@ export const main = handler(async (event, context) => {
       state,
       stateName,
       zip,
-      practice: uuid.v1(),
+      practice: practiceID,
       doctor,
       createdAt: Date.now(),
     },
   };
 
-  await dynamoDb.put(params);
+  const getDoctorPracticesParams = {
+    TableName: process.env.doctors_table,
+    Key: {
+      doctor,
+    },
+  };
+
+  // get the current practices of the doctor
+  const currentPractices = await dynamoDb.get(getDoctorPracticesParams);
+  const formattedPractices = currentPractices?.Item?.practices
+    ? currentPractices.Item.practices
+    : [];
+  formattedPractices.push(practiceID);
+
+  // update thte current practices of the doctor
+  const updateDoctorPractices = {
+    TableName: process.env.doctors_table,
+    Key: {
+      doctor,
+    },
+    UpdateExpression: "SET practices = :practices",
+    ExpressionAttributeValues: {
+      ":practices": formattedPractices,
+    },
+    ReturnValues: "NONE",
+  };
+  await dynamoDb.update(updateDoctorPractices);
+
+  // update the doctor practices
+  await dynamoDb.put(createPracticeParams);
 
   return { status: 200 };
 });

@@ -158,6 +158,20 @@ functions:
           path: practices
           method: put
           cors: true
+  practices-join:
+    handler: handlers/practices/joinPractice.main
+    events:
+      - http:
+          path: practices/join
+          method: put
+          cors: true
+  practices-leave:
+    handler: handlers/practices/leavePractice.main
+    events:
+      - http:
+          path: practices/leave
+          method: put
+          cors: true
   practices-delete:
     handler: handlers/practices/deletePractice.main
     events:

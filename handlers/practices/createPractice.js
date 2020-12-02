@@ -47,7 +47,7 @@ export const main = handler(async (event) => {
     : [];
   formattedPractices.push(practiceID);
 
-  // update thte current practices of the doctor
+  // update the current practices of the doctor
   const updateDoctorPractices = {
     TableName: process.env.doctors_table,
     Key: {

@@ -3,12 +3,13 @@ import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const { practice } = data;
+  const { practice, doctor } = data;
 
   const params = {
     TableName: process.env.practices_table,
     Key: {
       practice,
+      doctor,
     },
   };
 

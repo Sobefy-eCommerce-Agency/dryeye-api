@@ -2,7 +2,7 @@ import AWS from "aws-sdk";
 import handler from "../../libs/doctors-handler-lib";
 
 export const main = handler(async (event) => {
-  const { practice } = event.queryStringParameters;
+  const { practice, doctor } = event.queryStringParameters;
   const params = {
     TableName: process.env.doctors_table,
     ExpressionAttributeNames: {
@@ -12,8 +12,8 @@ export const main = handler(async (event) => {
     },
     Select: "SPECIFIC_ATTRIBUTES",
     ProjectionExpression: "#n,#ln,#d",
-    FilterExpression: "practice = :practice",
-    ExpressionAttributeValues: { ":practice": practice },
+    FilterExpression: practice ? "practice = :practice" : "doctor = :doctor",
+    ExpressionAttributeValues: { ":practice": practice, ":doctor": doctor },
   };
 
   const dynamoDb = new AWS.DynamoDB.DocumentClient();

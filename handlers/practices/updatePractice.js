@@ -5,6 +5,7 @@ export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
   const {
     practice,
+    doctor,
     name,
     phone,
     address,
@@ -18,6 +19,7 @@ export const main = handler(async (event) => {
     TableName: process.env.practices_table,
     Key: {
       practice,
+      doctor,
     },
     UpdateExpression:
       "SET #nameAttribute = :name, phone = :phone, address = :address, address2 = :address2, city = :city, #stateAttribte = :state, stateName = :stateName, zip = :zip",

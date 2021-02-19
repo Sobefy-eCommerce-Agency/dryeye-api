@@ -1,4 +1,4 @@
-export default function handler(lambda) {
+export default function handler(lambda, allowAll = false) {
   return async function (event, context) {
     let body, statusCode;
 
@@ -19,7 +19,9 @@ export default function handler(lambda) {
       statusCode,
       body: JSON.stringify(body),
       headers: {
-        "Access-Control-Allow-Origin": "https://shop.dryeyerescue.com",
+        "Access-Control-Allow-Origin": allowAll
+          ? "*"
+          : "https://shop.dryeyerescue.com",
         "Access-Control-Allow-Credentials": true,
       },
     };

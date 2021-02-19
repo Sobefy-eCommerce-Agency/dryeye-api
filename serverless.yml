@@ -21,8 +21,8 @@ provider:
   environment:
     patients_table: dryeye-patients
     doctors_table: dryeye-doctors
-    practices_table: dryeye-practices
     webhook_verify_hash: 42ab537de45b83b4f3d970d165104b32079d63f80f755ebbd9b482b058bceeaf
+    my_doctors_table: dryeye-my-doctors
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
@@ -138,45 +138,38 @@ functions:
           method: post
           cors: true
   practices-get:
-    handler: handlers/practices/getPractice.main
+    handler: handlers/practices/get.main
     events:
       - http:
           path: practices
           method: get
           cors: true
-  practices-create:
-    handler: handlers/practices/createPractice.main
+  my-doctors-list:
+    handler: handlers/myDoctors/list.main
     events:
       - http:
-          path: practices
+          path: my-doctors
+          method: get
+          cors: true
+  my-doctors-create:
+    handler: handlers/myDoctors/create.main
+    events:
+      - http:
+          path: my-doctors
           method: post
           cors: true
-  practices-update:
-    handler: handlers/practices/updatePractice.main
+  my-doctors-update:
+    handler: handlers/myDoctors/update.main
     events:
       - http:
-          path: practices
+          path: my-doctors
           method: put
           cors: true
-  practices-join:
-    handler: handlers/practices/joinPractice.main
+  my-doctors-delete:
+    handler: handlers/myDoctors/delete.main
     events:
       - http:
-          path: practices/join
-          method: put
-          cors: true
-  practices-leave:
-    handler: handlers/practices/leavePractice.main
-    events:
-      - http:
-          path: practices/leave
-          method: put
-          cors: true
-  practices-delete:
-    handler: handlers/practices/deletePractice.main
-    events:
-      - http:
-          path: practices
+          path: my-doctors
           method: delete
           cors: true
 # Create our resources with separate CloudFormation templates

@@ -1,40 +1,43 @@
-import handler from "../../libs/doctors-handler-lib";
+import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
   const {
-    practice,
     doctor,
-    name,
+    customer,
+    firstName,
+    lastName,
+    email,
     phone,
+    birthdate,
     address,
     address2,
     city,
     state,
-    stateName,
     zip,
   } = data;
   const params = {
-    TableName: process.env.practices_table,
+    TableName: process.env.my_doctors_table,
     Key: {
-      practice,
       doctor,
+      owner: customer,
     },
     UpdateExpression:
-      "SET #nameAttribute = :name, phone = :phone, address = :address, address2 = :address2, city = :city, #stateAttribte = :state, stateName = :stateName, zip = :zip",
+      "SET firstName = :firstName, lastName = :lastName, email = :email, phone = :phone, birthdate = :birthdate, address = :address, address2 = :address2, city = :city, #stateAttribte = :state, zip = :zip",
     ExpressionAttributeNames: {
-      "#nameAttribute": "name",
       "#stateAttribte": "state",
     },
     ExpressionAttributeValues: {
-      ":name": name || null,
+      ":firstName": firstName || null,
+      ":lastName": lastName || null,
+      ":email": email || null,
       ":phone": phone || null,
+      ":birthdate": birthdate || null,
       ":address": address || null,
       ":address2": address2 || null,
       ":city": city || null,
       ":state": state || null,
-      ":stateName": stateName || null,
       ":zip": zip || null,
     },
     ReturnValues: "ALL_NEW",

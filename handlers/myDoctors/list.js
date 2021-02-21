@@ -18,36 +18,6 @@ export const main = handler(async (event) => {
         filteredDoctors.push(currentDoctor);
       }
     }
-    // check if the customer is owner
-    const params = {
-      TableName: process.env.doctors_table,
-      Key: {
-        doctor: customer,
-      },
-    };
-    const currentOwner = await dynamoDb.get(params);
-    if (currentOwner.Item) {
-      // check tags
-      const tags = currentOwner.Item.tags;
-      if (tags) {
-        const tagsArray = tags.split(",");
-        if (tagsArray && tagsArray.length > 0) {
-          for (let i = 0; i < tagsArray.length; i++) {
-            const currentTag = tagsArray[i];
-            const trimmedTag = currentTag.trim();
-            // check if the tag includes the Doctor tag
-            if (trimmedTag === "Type of Account|Doctor") {
-              // add the current doctor as a owner
-              filteredDoctors.push({
-                firstName: currentOwner.Item.first_name,
-                lastName: currentOwner.Item.last_name,
-                doctor: currentOwner.Item.doctor,
-              });
-            }
-          }
-        }
-      }
-    }
   }
 
   return filteredDoctors;

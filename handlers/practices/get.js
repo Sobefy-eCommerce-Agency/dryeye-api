@@ -5,10 +5,10 @@ export const main = handler(async () => {
   const allPracticesParams = {
     TableName: process.env.doctors_table,
     Select: "SPECIFIC_ATTRIBUTES",
-    ProjectionExpression: "#d,#a",
+    ProjectionExpression: "#t,#a",
     FilterExpression: "attribute_exists(#a)",
     ExpressionAttributeNames: {
-      "#d": "doctor",
+      "#t": "tags",
       "#a": "addresses",
     },
   };
@@ -26,7 +26,28 @@ export const main = handler(async () => {
         for (let j = 0; j < addresses.length; j++) {
           const address = practice.addresses[j];
           if (address.company) {
-            filteredPractices.push(address);
+            // check if the practice has the doctor or staff tag
+            const tags = practice.tags;
+            if (tags) {
+              const tagsArray = tags.split(",");
+              if (tagsArray && tagsArray.length > 0) {
+                let validDoctorOrStaff = false;
+                for (let i = 0; i < tagsArray.length; i++) {
+                  const currentTag = tagsArray[i];
+                  const trimmedTag = currentTag.trim();
+                  // check if the tag includes the Doctor tag
+                  if (
+                    trimmedTag === "Type of Account|Doctor" ||
+                    trimmedTag === "Type of Account|Staff"
+                  ) {
+                    validDoctorOrStaff = true;
+                  }
+                }
+                if (validDoctorOrStaff) {
+                  filteredPractices.push(address);
+                }
+              }
+            }
           }
         }
       }

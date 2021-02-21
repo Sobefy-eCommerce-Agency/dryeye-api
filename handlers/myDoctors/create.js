@@ -29,12 +29,9 @@ export const main = handler(async (event) => {
         },
       };
       await dynamoDb.put(params);
-      return { status: 200 };
+      return {};
     }
-    return {
-      status: 400,
-      message: "You have not added a default practice",
-    };
+    throw new Error("You have not added a default practice");
   }
-  return { status: 400, message: "An unexpected error happened" };
+  throw new Error("An unexpected error happened");
 });

@@ -29,7 +29,7 @@ export const main = handler(async (event) => {
         },
       };
       await dynamoDb.put(params);
-      return {};
+      return { status: 200 };
     }
     throw new Error("You have not added a default practice");
   }

@@ -3,20 +3,7 @@ import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const {
-    doctor,
-    customer,
-    firstName,
-    lastName,
-    email,
-    phone,
-    birthdate,
-    address,
-    address2,
-    city,
-    state,
-    zip,
-  } = data;
+  const { doctor, customer, firstName, lastName, practice } = data;
   const params = {
     TableName: process.env.my_doctors_table,
     Key: {
@@ -24,21 +11,11 @@ export const main = handler(async (event) => {
       owner: customer,
     },
     UpdateExpression:
-      "SET firstName = :firstName, lastName = :lastName, email = :email, phone = :phone, birthdate = :birthdate, address = :address, address2 = :address2, city = :city, #stateAttribte = :state, zip = :zip",
-    ExpressionAttributeNames: {
-      "#stateAttribte": "state",
-    },
+      "SET firstName = :firstName, lastName = :lastName, practice = :practice",
     ExpressionAttributeValues: {
       ":firstName": firstName || null,
       ":lastName": lastName || null,
-      ":email": email || null,
-      ":phone": phone || null,
-      ":birthdate": birthdate || null,
-      ":address": address || null,
-      ":address2": address2 || null,
-      ":city": city || null,
-      ":state": state || null,
-      ":zip": zip || null,
+      ":practice": practice || null,
     },
     ReturnValues: "ALL_NEW",
   };

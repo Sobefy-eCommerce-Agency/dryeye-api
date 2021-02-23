@@ -4,7 +4,7 @@ import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const { doctor, address, address2, city, name, phone, state, zip } = data;
+  const { doctor, name, address, address2, city, state, zip, phone } = data;
   const params = {
     TableName: process.env.practices_table,
     Item: {
@@ -13,9 +13,9 @@ export const main = handler(async (event) => {
       address,
       address2,
       city,
-      phone,
       state,
       zip,
+      phone,
       practice: uuid.v1(),
       createdAt: Date.now(),
     },

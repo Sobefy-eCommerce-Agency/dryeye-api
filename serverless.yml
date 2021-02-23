@@ -145,13 +145,6 @@ functions:
           path: doctors
           method: post
           cors: true
-  practices-get:
-    handler: handlers/practices/get.main
-    events:
-      - http:
-          path: practices
-          method: get
-          cors: true
   my-doctors-list:
     handler: handlers/myDoctors/list.main
     events:
@@ -181,12 +174,26 @@ functions:
           method: delete
           cors: true
   # PRACTICES
+  practices-list:
+    handler: handlers/practices/list.main
+    events:
+      - http:
+          path: practices
+          method: get
+          cors: true
   practices-create:
     handler: handlers/practices/create.main
     events:
       - http:
           path: practices
           method: post
+          cors: true
+  practices-update:
+    handler: handlers/practices/update.main
+    events:
+      - http:
+          path: practices
+          method: put
           cors: true
 
 # Create our resources with separate CloudFormation templates

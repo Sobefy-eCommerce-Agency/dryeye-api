@@ -25,29 +25,9 @@ export const main = handler(async () => {
       if (addresses !== "" && addresses !== null && addresses.length > 0) {
         for (let j = 0; j < addresses.length; j++) {
           const address = practice.addresses[j];
+          // check if the practice has a company
           if (address.company) {
-            // check if the practice has the doctor or staff tag
-            const tags = practice.tags;
-            if (tags) {
-              const tagsArray = tags.split(",");
-              if (tagsArray && tagsArray.length > 0) {
-                let validDoctorOrStaff = false;
-                for (let i = 0; i < tagsArray.length; i++) {
-                  const currentTag = tagsArray[i];
-                  const trimmedTag = currentTag.trim();
-                  // check if the tag includes the Doctor tag
-                  if (
-                    trimmedTag === "Type of Account|Doctor" ||
-                    trimmedTag === "Type of Account|Staff"
-                  ) {
-                    validDoctorOrStaff = true;
-                  }
-                }
-                if (validDoctorOrStaff) {
-                  filteredPractices.push(address);
-                }
-              }
-            }
+            filteredPractices.push(address);
           }
         }
       }

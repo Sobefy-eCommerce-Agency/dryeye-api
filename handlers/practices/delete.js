@@ -3,25 +3,45 @@ import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const { practice } = data;
+  const { practice, doctor } = data;
+
   // Remove the practice of the doctors
-  const updateDoctorsParams = {
+  const doctorsParams = {
     TableName: process.env.my_doctors_table,
-    KeyConditionExpression: "practice = :currentPractice",
-    UpdateExpression: "SET practice = :practice",
-    ExpressionAttributeValues: {
-      ":currentPractice": practice,
-      ":practice": "",
+    FilterExpression: "#practice = :practice",
+    ExpressionAttributeNames: {
+      "#practice": "practice",
     },
-    ReturnValues: "ALL_NEW",
+    ExpressionAttributeValues: {
+      ":practice": practice,
+    },
   };
-  await dynamoDb.update(updateDoctorsParams);
+  const doctors = await dynamoDb.scan(doctorsParams);
+  const doctorsList = doctors.Items;
+  if (doctorsList.length > 0) {
+    doctorsList.forEach((doctor) => {
+      const updateDoctorsParams = {
+        TableName: process.env.my_doctors_table,
+        Key: {
+          doctor,
+          practice,
+        },
+        UpdateExpression: "SET practice = :practice",
+        ExpressionAttributeValues: {
+          ":practice": "",
+        },
+        ReturnValues: "ALL_NEW",
+      };
+      dynamoDb.update(updateDoctorsParams);
+    });
+  }
 
   // Remove the practice
   const params = {
     TableName: process.env.practices_table,
     Key: {
       practice,
+      doctor,
     },
   };
 

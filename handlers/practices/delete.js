@@ -3,7 +3,7 @@ import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const { practice, doctor } = data;
+  const { practice, doctor: practiceOwner } = data;
 
   // Remove the practice of the doctors
   const doctorsParams = {
@@ -19,20 +19,23 @@ export const main = handler(async (event) => {
   const doctors = await dynamoDb.scan(doctorsParams);
   const doctorsList = doctors.Items;
   if (doctorsList.length > 0) {
-    doctorsList.forEach((doctor) => {
-      const updateDoctorsParams = {
-        TableName: process.env.my_doctors_table,
-        Key: {
-          doctor,
-          practice,
-        },
-        UpdateExpression: "SET practice = :practice",
-        ExpressionAttributeValues: {
-          ":practice": "",
-        },
-        ReturnValues: "ALL_NEW",
-      };
-      dynamoDb.update(updateDoctorsParams);
+    doctorsList.forEach(async (doctor) => {
+      // check if the current doctor has the current practice
+      if (doctor.practice === practice) {
+        const updateDoctorsParams = {
+          TableName: process.env.my_doctors_table,
+          Key: {
+            doctor: doctor.doctor,
+            owner: practiceOwner,
+          },
+          UpdateExpression: "SET practice = :practice",
+          ExpressionAttributeValues: {
+            ":practice": "",
+          },
+          ReturnValues: "ALL_NEW",
+        };
+        await dynamoDb.update(updateDoctorsParams);
+      }
     });
   }
 
@@ -41,7 +44,7 @@ export const main = handler(async (event) => {
     TableName: process.env.practices_table,
     Key: {
       practice,
-      doctor,
+      doctor: practiceOwner,
     },
   };
 

@@ -2,7 +2,7 @@ import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
 
 export const main = handler(async (event) => {
-  const { customer } = event.queryStringParameters;
+  const { practice } = event.queryStringParameters;
 
   const params = {
     TableName: process.env.my_doctors_table,
@@ -14,7 +14,7 @@ export const main = handler(async (event) => {
   if (myDoctors.Items) {
     for (let i = 0; i < myDoctors.Items.length; i++) {
       const currentDoctor = myDoctors.Items[i];
-      if (currentDoctor.owner === customer) {
+      if (currentDoctor.practice === practice) {
         filteredDoctors.push(currentDoctor);
       }
     }

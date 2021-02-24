@@ -6,12 +6,15 @@ export const main = handler(async (event) => {
   if (event.queryStringParameters?.doctor) {
     const params = {
       TableName: process.env.practices_table,
-      KeyConditionExpression: "doctor = :doctor",
+      FilterExpression: "#doctor = :doctor",
+      ExpressionAttributeNames: {
+        "#doctor": "doctor",
+      },
       ExpressionAttributeValues: {
         ":doctor": event.queryStringParameters.doctor,
       },
     };
-    response = await dynamoDb.query(params);
+    response = await dynamoDb.scan(params);
   } else {
     const params = {
       TableName: process.env.practices_table,

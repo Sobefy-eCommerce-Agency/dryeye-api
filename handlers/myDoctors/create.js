@@ -15,23 +15,19 @@ export const main = handler(async (event) => {
   };
   const currentDoctor = await dynamoDb.get(doctorParams);
   if (currentDoctor.Item) {
-    const addresses = currentDoctor.Item.addresses;
-    if (addresses.length > 0) {
-      const params = {
-        TableName: process.env.my_doctors_table,
-        Item: {
-          firstName,
-          lastName,
-          practice,
-          owner: customer,
-          doctor: uuid.v1(),
-          createdAt: Date.now(),
-        },
-      };
-      await dynamoDb.put(params);
-      return { status: 200 };
-    }
-    throw new Error("You have not added a default practice");
+    const params = {
+      TableName: process.env.my_doctors_table,
+      Item: {
+        firstName,
+        lastName,
+        practice,
+        owner: customer,
+        doctor: uuid.v1(),
+        createdAt: Date.now(),
+      },
+    };
+    await dynamoDb.put(params);
+    return { status: 200 };
   }
   throw new Error("An unexpected error happened");
 });

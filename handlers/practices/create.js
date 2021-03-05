@@ -33,6 +33,9 @@ export const main = handler(async (event) => {
     latitude,
     longitude,
   } = data;
+
+  const practiceID = uuid.v1();
+
   const params = {
     TableName: process.env.practices_table,
     Item: {
@@ -51,7 +54,7 @@ export const main = handler(async (event) => {
       friday_op_hours: friday_op_hours || "",
       saturday_op_hours: saturday_op_hours || "",
       sunday_op_hours: sunday_op_hours || "",
-      practice: uuid.v1(),
+      practice: practiceID,
       createdAt: Date.now(),
       address: address || "",
       route: route || "",
@@ -68,5 +71,5 @@ export const main = handler(async (event) => {
     },
   };
   await dynamoDb.put(params);
-  return { status: 200 };
+  return { status: 200, practice: practiceID };
 });

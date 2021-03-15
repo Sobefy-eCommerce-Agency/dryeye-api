@@ -17,11 +17,15 @@ export const main = handler(async (event) => {
         }
       }
     } else {
-      for (let i = 0; i < myDoctors.Items.length; i++) {
-        const currentDoctor = myDoctors.Items[i];
-        if (currentDoctor.owner === event.queryStringParameters.owner) {
-          filteredDoctors.push(currentDoctor);
+      if (event.queryStringParameters?.owner) {
+        for (let i = 0; i < myDoctors.Items.length; i++) {
+          const currentDoctor = myDoctors.Items[i];
+          if (currentDoctor.owner === event.queryStringParameters.owner) {
+            filteredDoctors.push(currentDoctor);
+          }
         }
+      } else {
+        return myDoctors.Items;
       }
     }
   }

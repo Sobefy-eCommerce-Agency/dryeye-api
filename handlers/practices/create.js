@@ -72,4 +72,4 @@ export const main = handler(async (event) => {
   };
   await dynamoDb.put(params);
   return { status: 200, practice: practiceID };
-});
+}, true);

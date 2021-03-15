@@ -1,26 +1,27 @@
 import handler from "./libs/handler-lib";
 import dynamoDb from "./libs/dynamodb-lib";
 
-export const main = handler(async (event, context) => {
-  const params = {
-    TableName: process.env.patients_table,
-    // 'KeyConditionExpression' defines the condition for the query
-    // - 'userId = :userId': only return items with matching 'userId'
-    //   partition key
-    // 'ExpressionAttributeValues' defines the value in the condition
-    // - ':userId': defines 'userId' to be Identity Pool identity id
-    //   of the authenticated user
-    KeyConditionExpression: "#userAttribute = :user",
-    ExpressionAttributeNames: {
-      "#userAttribute": "user",
-    },
-    ExpressionAttributeValues: {
-      ":user": event.queryStringParameters.user,
-    },
-  };
-
-  const result = await dynamoDb.query(params);
+export const main = handler(async (event) => {
+  let response = [];
+  if (event.queryStringParameters?.user) {
+    const params = {
+      TableName: process.env.patients_table,
+      KeyConditionExpression: "#userAttribute = :user",
+      ExpressionAttributeNames: {
+        "#userAttribute": "user",
+      },
+      ExpressionAttributeValues: {
+        ":user": event.queryStringParameters.user,
+      },
+    };
+    response = await dynamoDb.query(params);
+  } else {
+    const params = {
+      TableName: process.env.patients_table,
+    };
+    response = await dynamoDb.scan(params);
+  }
 
   // Return the matching list of items in response body
-  return result.Items;
-});
+  return response.Items;
+}, true);

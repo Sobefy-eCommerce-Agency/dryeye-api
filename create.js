@@ -2,7 +2,7 @@ import * as uuid from "uuid";
 import handler from "./libs/handler-lib";
 import dynamoDb from "./libs/dynamodb-lib";
 
-export const main = handler(async (event, context) => {
+export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
   const {
     user,
@@ -10,7 +10,6 @@ export const main = handler(async (event, context) => {
     lastName,
     email,
     phone,
-    birthdate,
     address,
     address2,
     city,
@@ -24,7 +23,6 @@ export const main = handler(async (event, context) => {
       lastName,
       email,
       phone,
-      birthdate,
       address,
       address2,
       city,
@@ -39,4 +37,4 @@ export const main = handler(async (event, context) => {
   await dynamoDb.put(params);
 
   return { status: 200 };
-});
+}, true);

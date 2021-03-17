@@ -195,7 +195,14 @@ functions:
           path: practices
           method: delete
           cors: true
-
+  # CUSTOMERS
+  customers-list:
+    handler: handlers/customers/list.main
+    events:
+      - http:
+          path: customers
+          method: get
+          cors: true
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

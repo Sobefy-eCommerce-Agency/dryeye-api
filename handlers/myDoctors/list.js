@@ -25,7 +25,44 @@ export const main = handler(async (event) => {
           }
         }
       } else {
-        return myDoctors.Items;
+        for (let i = 0; i < myDoctors.Items.length; i++) {
+          const currentDoctor = myDoctors.Items[i];
+          // Get the entities name
+          let practiceName = "";
+          let doctorName = "";
+
+          if (currentDoctor.owner) {
+            const doctorParams = {
+              TableName: process.env.doctors_table,
+              KeyConditionExpression: "doctor = :doctor",
+              ExpressionAttributeValues: {
+                ":doctor": currentDoctor.owner,
+              },
+            };
+            const filteredDoctor = await dynamoDb.query(doctorParams);
+            if (filteredDoctor && filteredDoctor.Items.length === 1) {
+              doctorName = `${filteredDoctor.Items[0].first_name} ${filteredDoctor.Items[0].last_name}`;
+            }
+          }
+          if (currentDoctor.practice) {
+            const practiceParams = {
+              TableName: process.env.practices_table,
+              KeyConditionExpression: "practice = :practice",
+              ExpressionAttributeValues: {
+                ":practice": currentDoctor.practice,
+              },
+            };
+            const currentPractice = await dynamoDb.query(practiceParams);
+            if (currentPractice && currentPractice.Items.length === 1) {
+              practiceName = `${currentPractice.Items[0].name} (${currentPractice.Items[0].city}, ${currentPractice.Items[0].state})`;
+            }
+          }
+          filteredDoctors.push({
+            ...currentDoctor,
+            doctorName: doctorName || "",
+            practiceName: practiceName || "",
+          });
+        }
       }
     }
   }

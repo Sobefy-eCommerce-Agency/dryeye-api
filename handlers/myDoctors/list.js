@@ -59,8 +59,8 @@ export const main = handler(async (event) => {
           }
           filteredDoctors.push({
             ...currentDoctor,
-            doctorName: doctorName || "",
-            practiceName: practiceName || "",
+            doctorName: doctorName,
+            practiceName: practiceName,
           });
         }
       }

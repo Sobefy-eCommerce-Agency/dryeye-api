@@ -32,6 +32,9 @@ export const main = handler(async (event) => {
     zip,
     latitude,
     longitude,
+    dryEyeTreatments,
+    eyeCareServices,
+    dryEyeProducts,
   } = data;
 
   const practiceID = uuid.v1();
@@ -68,6 +71,9 @@ export const main = handler(async (event) => {
       zip: zip || "",
       latitude: latitude || "",
       longitude: longitude || "",
+      dryEyeTreatments: dryEyeTreatments || [],
+      eyeCareServices: eyeCareServices || [],
+      dryEyeProducts: dryEyeProducts || "",
     },
   };
   await dynamoDb.put(params);

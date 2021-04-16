@@ -23,6 +23,8 @@ export const main = handler(async (event) => {
     if (practicesResult && practicesResult.Items.length > 0) {
       for (let i = 0; i < practicesResult.Items.length; i++) {
         const currentPractice = practicesResult.Items[i];
+        const { practice } = currentPractice;
+        // Add doctor name property
         const doctorParams = {
           TableName: process.env.doctors_table,
           KeyConditionExpression: "doctor = :doctor",
@@ -35,7 +37,22 @@ export const main = handler(async (event) => {
         if (currentDoctor && currentDoctor.Items.length === 1) {
           doctorName = `${currentDoctor.Items[0].first_name} ${currentDoctor.Items[0].last_name}`;
         }
-        response.Items.push({ ...currentPractice, doctorName });
+        // Add all doctors property
+        let doctors = null;
+        if (event.queryStringParameters?.all_doctors) {
+          const doctorsParams = {
+            TableName: process.env.my_doctors_table,
+            FilterExpression: "practice = :practice",
+            ExpressionAttributeValues: {
+              ":practice": practice,
+            },
+          };
+          const doctorsResult = await dynamoDb.scan(doctorsParams);
+          if (doctorsResult && doctorsResult.Items.length > 0) {
+            doctors = doctorsResult.Items;
+          }
+        }
+        response.Items.push({ ...currentPractice, doctorName, doctors });
       }
     }
   }

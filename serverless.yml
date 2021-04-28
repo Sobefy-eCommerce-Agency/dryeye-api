@@ -104,21 +104,21 @@ functions:
           method: delete
           cors: true
   webhook-customers-create:
-    handler: handlers/webhooks/createCustomer.main
+    handler: handlers/webhooks/customer/createCustomer.main
     events:
       - http:
           path: webhooks/create-customer
           method: post
           cors: true
   webhook-customers-update:
-    handler: handlers/webhooks/updateCustomer.main
+    handler: handlers/webhooks/customer/updateCustomer.main
     events:
       - http:
           path: webhooks/update-customer
           method: post
           cors: true
   webhook-customers-delete:
-    handler: handlers/webhooks/deleteCustomer.main
+    handler: handlers/webhooks/customer/deleteCustomer.main
     events:
       - http:
           path: webhooks/delete-customer

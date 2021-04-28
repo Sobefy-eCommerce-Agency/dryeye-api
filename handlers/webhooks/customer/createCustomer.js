@@ -1,5 +1,5 @@
-import handler from "../../libs/webhook-handler-lib";
-import dynamoDb from "../../libs/dynamodb-lib";
+import handler from "../../../libs/webhook-handler-lib";
+import dynamoDb from "../../../libs/dynamodb-lib";
 const crypto = require("crypto");
 
 export const main = handler(async (event) => {

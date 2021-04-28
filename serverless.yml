@@ -107,21 +107,21 @@ functions:
     handler: handlers/webhooks/customer/createCustomer.main
     events:
       - http:
-          path: webhooks/create-customer
+          path: webhooks/customer/create-customer
           method: post
           cors: true
   webhook-customers-update:
     handler: handlers/webhooks/customer/updateCustomer.main
     events:
       - http:
-          path: webhooks/update-customer
+          path: webhooks/customer/update-customer
           method: post
           cors: true
   webhook-customers-delete:
     handler: handlers/webhooks/customer/deleteCustomer.main
     events:
       - http:
-          path: webhooks/delete-customer
+          path: webhooks/customer/delete-customer
           method: post
           cors: true
   doctors-get:

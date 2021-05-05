@@ -24,6 +24,7 @@ provider:
     webhook_verify_hash: 42ab537de45b83b4f3d970d165104b32079d63f80f755ebbd9b482b058bceeaf
     my_doctors_table: dryeye-my-doctors
     practices_table: dryeye-practices
+    services_and_treatments_table: dryeye-services-and-treatments
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
@@ -202,6 +203,35 @@ functions:
       - http:
           path: customers
           method: get
+          cors: true
+  # SERVICES & TREATMENTS
+  services-and-treatments-list:
+    handler: handlers/servicesAndTreatments/list.main
+    events:
+      - http:
+          path: services-and-treatments
+          method: get
+          cors: true
+  services-and-treatments-create:
+    handler: handlers/servicesAndTreatments/create.main
+    events:
+      - http:
+          path: services-and-treatments
+          method: post
+          cors: true
+  services-and-treatments-update:
+    handler: handlers/servicesAndTreatments/update.main
+    events:
+      - http:
+          path: services-and-treatments
+          method: put
+          cors: true
+  services-and-treatments-delete:
+    handler: handlers/servicesAndTreatments/delete.main
+    events:
+      - http:
+          path: services-and-treatments
+          method: delete
           cors: true
 # Create our resources with separate CloudFormation templates
 resources:

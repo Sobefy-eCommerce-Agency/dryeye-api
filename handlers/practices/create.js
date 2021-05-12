@@ -36,7 +36,9 @@ export const main = handler(async (event) => {
     dryEyeTreatments,
     eyeCareServices,
     dryEyeProducts,
-    preferred,
+    providerPlus,
+    provider,
+    partner,
   } = data;
 
   const practiceID = uuid.v1();
@@ -77,7 +79,9 @@ export const main = handler(async (event) => {
       dryEyeTreatments: dryEyeTreatments || [],
       eyeCareServices: eyeCareServices || [],
       dryEyeProducts: dryEyeProducts || "",
-      preferred: preferred || false,
+      providerPlus: providerPlus || false,
+      provider: provider || false,
+      partner: partner || false,
     },
   };
   await dynamoDb.put(params);

@@ -90,6 +90,12 @@ export const main = handler(async (event) => {
       (a, b) => b.totalSpent - a.totalSpent
     );
     response.Items = sortedByTotalSpent;
+
+    // Remove total spent property
+    const filteredPractices = response.Items.map(
+      ({ totalSpent, ...rest }) => rest
+    );
+    response.Items = filteredPractices;
   }
   const practices = response.Items;
   return practices;

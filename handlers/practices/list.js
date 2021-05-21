@@ -34,8 +34,15 @@ export const main = handler(async (event) => {
         };
         const currentDoctor = await dynamoDb.query(doctorParams);
         let doctorName = "";
+        let totalSpent = 0;
         if (currentDoctor && currentDoctor.Items.length === 1) {
           doctorName = `${currentDoctor.Items[0].first_name} ${currentDoctor.Items[0].last_name}`;
+          // Add total spent
+          if (event.queryStringParameters?.total_spent) {
+            totalSpent = currentDoctor.Items[0].total_spent
+              ? Number(currentDoctor.Items[0].total_spent)
+              : 0;
+          }
         }
         // Add all doctors property
         let doctors = null;
@@ -52,9 +59,37 @@ export const main = handler(async (event) => {
             doctors = doctorsResult.Items;
           }
         }
-        response.Items.push({ ...currentPractice, doctorName, doctors });
+        response.Items.push({
+          ...currentPractice,
+          doctorName,
+          doctors,
+          totalSpent,
+        });
       }
     }
+  }
+  // Sort doctors result
+  // Sort by treatments number
+  if (
+    event.queryStringParameters?.treatments &&
+    response.Items &&
+    response.Items.length > 0
+  ) {
+    const sortedByTreatmentsNumber = response.Items.sort(
+      (a, b) => b.dryEyeTreatments.length - a.dryEyeTreatments.length
+    );
+    response.Items = sortedByTreatmentsNumber;
+  }
+  // Sort by total spent
+  if (
+    event.queryStringParameters?.total_spent &&
+    response.Items &&
+    response.Items.length > 0
+  ) {
+    const sortedByTotalSpent = response.Items.sort(
+      (a, b) => b.totalSpent - a.totalSpent
+    );
+    response.Items = sortedByTotalSpent;
   }
   const practices = response.Items;
   return practices;

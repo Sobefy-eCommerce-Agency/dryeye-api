@@ -39,6 +39,7 @@ export const main = handler(async (event) => {
     providerPlus,
     provider,
     partner,
+    active,
   } = data;
 
   const practiceID = uuid.v1();
@@ -82,6 +83,7 @@ export const main = handler(async (event) => {
       providerPlus: providerPlus || false,
       provider: provider || false,
       partner: partner || false,
+      active: active || false,
     },
   };
   await dynamoDb.put(params);

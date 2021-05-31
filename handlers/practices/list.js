@@ -68,8 +68,8 @@ export const main = handler(async (event) => {
       }
     }
   }
-  // Sort doctors result
-  // Sort by treatments number
+  // Sort
+  // Sort - By treatments number
   if (
     event.queryStringParameters?.treatments &&
     response.Items &&
@@ -80,7 +80,8 @@ export const main = handler(async (event) => {
     );
     response.Items = sortedByTreatmentsNumber;
   }
-  // Sort by total spent
+
+  // Sort - By total spent
   if (
     event.queryStringParameters?.total_spent &&
     response.Items &&
@@ -97,6 +98,17 @@ export const main = handler(async (event) => {
     );
     response.Items = filteredPractices;
   }
+
+  // Sort - By active practices
+  if (
+    event.queryStringParameters?.activeOnly &&
+    response.Items &&
+    response.Items.length > 0
+  ) {
+    const sortedPractices = response.Items.filter((el) => el.active !== false);
+    response.Items = sortedPractices;
+  }
+
   const practices = response.Items;
   return practices;
 }, true);

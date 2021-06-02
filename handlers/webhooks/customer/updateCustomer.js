@@ -1,5 +1,7 @@
 import handler from "../../../libs/webhook-handler-lib";
 import dynamoDb from "../../../libs/dynamodb-lib";
+import axios from "axios";
+import { GenerateRandomString } from "../../../utils/utils";
 const crypto = require("crypto");
 
 export const main = handler(async (event) => {
@@ -56,6 +58,51 @@ export const main = handler(async (event) => {
     admin_graphql_api_id,
     default_address,
   } = data;
+
+  // Check if the customer status is enabled
+  if (state === "enabled") {
+    // Refersion - Get Afilliate ID
+    const query = {
+      query: `{affiliates(email:\"${email}\"){id}}`,
+    };
+
+    const afilliateID = await axios({
+      method: "post",
+      url: process.env.refersion_graphql_host,
+      headers: {
+        "Content-type": "application/json",
+        "X-Refersion-Key": process.env.refersion_graphql_api_key,
+      },
+      data: JSON.stringify(query),
+    });
+    if (afilliateID.data?.data?.affiliates?.length > 0) {
+      // Refersion - Edit Afilliate
+      console.log(afilliateID.data.data.affiliates[0].id);
+    } else {
+      // Refersion - Create Afilliate
+      const body = {
+        first_name,
+        last_name,
+        email,
+        phone,
+        password: GenerateRandomString(),
+        send_welcome: false,
+      };
+
+      const afilliate = await axios({
+        method: "post",
+        url: `${process.env.refersion_host}/api/new_affiliate`,
+        headers: {
+          "Content-type": "application/json",
+          "Refersion-Secret-Key": process.env.refersion_secret_key,
+          "Refersion-Public-Key": process.env.refersion_public_key,
+        },
+        data: JSON.stringify(body),
+      });
+
+      console.log(afilliate);
+    }
+  }
 
   const params = {
     TableName: process.env.doctors_table,

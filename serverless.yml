@@ -19,12 +19,17 @@ provider:
   # These environment variables are made available to our functions
   # under process.env.
   environment:
-    patients_table: dryeye-patients
-    doctors_table: dryeye-doctors
-    webhook_verify_hash: 42ab537de45b83b4f3d970d165104b32079d63f80f755ebbd9b482b058bceeaf
-    my_doctors_table: dryeye-my-doctors
-    practices_table: dryeye-practices
+    patients_table: ${env:TABLE_PATIENTS}
+    doctors_table: ${env:TABLE_DOCTORS}
+    my_doctors_table: ${env:TABLE_MY_DOCTORS}
+    practices_table: ${env:TABLE_PRACTICES}
+    webhook_verify_hash: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH}
     services_and_treatments_table: dryeye-services-and-treatments
+    refersion_host: ${env:REFERSION_HOST}
+    refersion_graphql_host: ${env:REFERSION_GRAPHQL_HOST}
+    refersion_graphql_api_key: ${env:REFERSION_GRAPHQL_KEY}
+    refersion_public_key: ${env:REFERSION_PUBLIC_KEY}
+    refersion_secret_key: ${env:REFERSION_SECRET_KEY}
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.

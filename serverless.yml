@@ -238,6 +238,16 @@ functions:
           path: services-and-treatments
           method: delete
           cors: true
+  # REFERSION
+  # REFERSION - Affiliates
+  refersion-affiliates-check:
+    handler: handlers/refersion/affiliates/check.main
+    events:
+      - http:
+          path: affiliates/check
+          method: post
+          cors: true
+
 # Create our resources with separate CloudFormation templates
 resources:
   # API Gateway Errors

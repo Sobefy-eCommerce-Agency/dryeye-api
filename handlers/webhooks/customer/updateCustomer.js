@@ -2,6 +2,7 @@ import handler from "../../../libs/webhook-handler-lib";
 import dynamoDb from "../../../libs/dynamodb-lib";
 import axios from "axios";
 import { GenerateRandomString } from "../../../utils/utils";
+import { getAffiliate } from "../../../utils/fetch";
 const crypto = require("crypto");
 
 export const main = handler(async (event) => {
@@ -62,22 +63,11 @@ export const main = handler(async (event) => {
   // Check if the customer status is enabled
   if (state === "enabled") {
     // Refersion - Get Afilliate ID
-    const query = {
-      query: `{affiliates(email:\"${email}\"){id}}`,
-    };
+    const affiliateID = await getAffiliate(email);
 
-    const afilliateID = await axios({
-      method: "post",
-      url: process.env.refersion_graphql_host,
-      headers: {
-        "Content-type": "application/json",
-        "X-Refersion-Key": process.env.refersion_graphql_api_key,
-      },
-      data: JSON.stringify(query),
-    });
-    if (afilliateID.data?.data?.affiliates?.length > 0) {
+    if (affiliateID.data?.data?.affiliates?.length > 0) {
       // Refersion - Edit Afilliate
-      console.log(afilliateID.data.data.affiliates[0].id);
+      console.log(affiliateID.data.data.affiliates[0].id);
     } else {
       // Refersion - Create Afilliate
       const body = {
@@ -89,7 +79,7 @@ export const main = handler(async (event) => {
         send_welcome: false,
       };
 
-      const afilliate = await axios({
+      const affiliate = await axios({
         method: "post",
         url: `${process.env.refersion_host}/api/new_affiliate`,
         headers: {
@@ -100,7 +90,7 @@ export const main = handler(async (event) => {
         data: JSON.stringify(body),
       });
 
-      console.log(afilliate);
+      console.log(affiliate);
     }
   }
 

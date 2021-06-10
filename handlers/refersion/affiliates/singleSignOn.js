@@ -1,23 +1,27 @@
-import { getAffiliate } from "../../../utils/fetch";
+import { getAffiliateSingleSignOnToken } from "../../../utils/fetch";
 
 export const main = async (event) => {
   let body, statusCode;
   const data = JSON.parse(event.body);
-  const { email } = data;
+  const { affiliateID } = data;
 
-  if (email) {
+  if (affiliateID) {
     try {
-      const affiliateID = await getAffiliate(email);
-      body = affiliateID.data?.data?.affiliates[0];
+      const singleSignOnToken = await getAffiliateSingleSignOnToken(
+        affiliateID
+      );
+      body = singleSignOnToken.data;
       statusCode = 200;
     } catch (e) {
       body = { error: e.message };
       statusCode = 500;
     }
   } else {
-    body = { error: "Email must be defined" };
+    body = { error: "Affiliate ID must be defined" };
     statusCode = 200;
   }
+
+  console.log(body);
 
   return {
     statusCode,

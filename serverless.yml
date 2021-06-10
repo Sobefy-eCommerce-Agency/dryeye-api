@@ -247,6 +247,13 @@ functions:
           path: affiliates/check
           method: post
           cors: true
+  refersion-affiliates-single-sign-on:
+    handler: handlers/refersion/affiliates/singleSignOn.main
+    events:
+      - http:
+          path: affiliates/single-sign-on
+          method: post
+          cors: true
 
 # Create our resources with separate CloudFormation templates
 resources:

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { GenerateRandomString } from "./utils";
 
 export const getAffiliate = async (email) => {
   const query = {
@@ -14,6 +15,34 @@ export const getAffiliate = async (email) => {
     data: JSON.stringify(query),
   });
   return affiliateID;
+};
+
+export const createAffiliate = async ({
+  first_name,
+  last_name,
+  email,
+  phone,
+  send_welcome,
+}) => {
+  const body = {
+    first_name,
+    last_name,
+    email,
+    send_welcome,
+    phone: phone || "",
+    password: GenerateRandomString(),
+  };
+  const affiliate = await axios({
+    method: "post",
+    url: `${process.env.refersion_host}/api/new_affiliate`,
+    headers: {
+      "Content-type": "application/json",
+      "Refersion-Secret-Key": process.env.refersion_secret_key,
+      "Refersion-Public-Key": process.env.refersion_public_key,
+    },
+    data: JSON.stringify(body),
+  });
+  return affiliate;
 };
 
 export const getAffiliateSingleSignOnToken = async (affiliateID) => {

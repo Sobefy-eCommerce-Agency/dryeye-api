@@ -30,6 +30,7 @@ provider:
     refersion_graphql_api_key: ${env:REFERSION_GRAPHQL_KEY}
     refersion_public_key: ${env:REFERSION_PUBLIC_KEY}
     refersion_secret_key: ${env:REFERSION_SECRET_KEY}
+    sobefy_internal_key: ${env:SOBEFY_INTERNAL_KEY}
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.

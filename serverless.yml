@@ -255,6 +255,14 @@ functions:
           path: affiliates/single-sign-on
           method: post
           cors: true
+  refersion-create-affiliates:
+    handler: handlers/refersion/affiliates/createAffiliates.main
+    timeout: 240
+    events:
+      - http:
+          path: affiliates/create
+          method: post
+          cors: true
 
 # Create our resources with separate CloudFormation templates
 resources:

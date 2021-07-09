@@ -25,7 +25,7 @@ export const main = handler(async (event) => {
   await dynamoDb.update(params);
 
   // Refersion - Get Afilliate ID
-  if (email) {
+  if (email && firstName && lastName) {
     const affiliateID = await getAffiliate(email);
     if (affiliateID.data?.data?.affiliates?.length > 0) {
       // Refersion - Edit Afilliate

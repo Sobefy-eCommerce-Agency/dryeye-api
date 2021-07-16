@@ -19,7 +19,24 @@ export const main = handler(async (event) => {
     const params = {
       TableName: process.env.practices_table,
     };
-    const practicesResult = await dynamoDb.scan(params);
+    let practicesResult = await dynamoDb.scan(params);
+    // Check if theres more items
+    // TODO: Fetch again if LastEvaluatedKey is present in the new result
+    if (
+      practicesResult &&
+      practicesResult.Items.length > 0 &&
+      practicesResult.LastEvaluatedKey
+    ) {
+      const lastEvaluatedKey = practicesResult.LastEvaluatedKey;
+      const newParams = {
+        TableName: process.env.practices_table,
+        ExclusiveStartKey: lastEvaluatedKey,
+      };
+      const newResult = await dynamoDb.scan(newParams);
+      if (newResult && newResult.Items.length > 0) {
+        practicesResult.Items.push(...newResult.Items);
+      }
+    }
     if (practicesResult && practicesResult.Items.length > 0) {
       for (let i = 0; i < practicesResult.Items.length; i++) {
         const currentPractice = practicesResult.Items[i];

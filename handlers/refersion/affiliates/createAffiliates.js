@@ -21,8 +21,8 @@ export const main = handler(async (event) => {
     if (allDoctors.Items) {
       for (let i = 0; i < allDoctors.Items.length; i++) {
         const currentDoctor = allDoctors.Items[i];
-        const { first_name, last_name, email } = currentDoctor;
-        if (email && first_name && last_name) {
+        const { first_name, last_name, email, state, doctor } = currentDoctor;
+        if (email && first_name && last_name && state === "enabled") {
           // Refersion - Check if theres an affiliate created
           try {
             const affiliateID = await getAffiliate(email);
@@ -33,6 +33,20 @@ export const main = handler(async (event) => {
             );
             if (affiliateID.data?.data?.affiliates?.length > 0) {
               // Affiliate exists
+              const affiliate = affiliateID.data?.data?.affiliates[0];
+              const params = {
+                TableName: process.env.doctors_table,
+                Key: {
+                  doctor,
+                },
+                UpdateExpression: "SET affiliate_id = :affiliate_id",
+                ExpressionAttributeValues: {
+                  ":affiliate_id": affiliate || null,
+                },
+                ReturnValues: "NONE",
+              };
+
+              await dynamoDb.update(params);
             } else {
               // Refersion - Create Afilliate
               try {

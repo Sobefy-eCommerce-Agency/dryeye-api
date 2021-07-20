@@ -21,7 +21,7 @@ export const main = handler(async (event) => {
     };
     let practicesResult = await dynamoDb.scan(params);
     // Check if theres more items
-    // TODO: Fetch again if LastEvaluatedKey is present in the new result
+    // TODO: Add a function fetcher to fetch again if LastEvaluatedKey is present
     if (
       practicesResult &&
       practicesResult.Items.length > 0 &&

@@ -19,7 +19,7 @@ export const main = handler(async (event) => {
   // Check if the practice is active
   if (hasResult) {
     const currentPractice = Items[0];
-    const { active, practice, dryEyeTreatments, eyeCareServices } =
+    const { active, practice, dryEyeTreatments, eyeCareServices, tests } =
       currentPractice;
     if (active !== false) practiceRequested = currentPractice;
 
@@ -53,6 +53,9 @@ export const main = handler(async (event) => {
       const services = servicesAndTreatmentsResult.Items.filter(
         (el) => el.type === "service"
       );
+      const definedTests = servicesAndTreatmentsResult.Items.filter(
+        (el) => el.type === "test"
+      );
 
       let practiceTreatments = [];
 
@@ -80,8 +83,22 @@ export const main = handler(async (event) => {
         });
       }
 
+      let practiceTests = [];
+
+      if (tests && tests.length > 0) {
+        tests.map((test) => {
+          const testDefinition = definedTests.filter(
+            (defTest) => defTest.id === test
+          );
+          if (testDefinition && testDefinition.length === 1) {
+            practiceTests.push(testDefinition[0].label);
+          }
+        });
+      }
+
       practiceRequested.practiceTreatments = practiceTreatments;
       practiceRequested.practiceServices = practiceServices;
+      practiceRequested.practiceTests = practiceTests;
     }
   }
   return practiceRequested;

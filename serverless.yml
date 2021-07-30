@@ -202,6 +202,13 @@ functions:
           path: practices
           method: put
           cors: true
+  practices-update-cms:
+    handler: handlers/practices/updateCMS.main
+    events:
+      - http:
+          path: practices-cms
+          method: put
+          cors: true
   practices-delete:
     handler: handlers/practices/delete.main
     events:

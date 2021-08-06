@@ -86,7 +86,7 @@ export const main = handler(async (event) => {
       ":dryEyeTreatments": dryEyeTreatments || [],
       ":eyeCareServices": eyeCareServices || [],
       ":tests": tests || [],
-      ":dryEyeProducts": dryEyeProducts || "",
+      ":dryEyeProducts": dryEyeProducts || [],
       ":providerPlus": providerPlus || false,
       ":provider": provider || false,
       ":partner": partner || false,

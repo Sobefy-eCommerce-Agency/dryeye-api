@@ -79,7 +79,7 @@ export const main = handler(async (event) => {
       longitude: longitude ? parseFloat(longitude) : "",
       dryEyeTreatments: dryEyeTreatments || [],
       eyeCareServices: eyeCareServices || [],
-      dryEyeProducts: dryEyeProducts || "",
+      dryEyeProducts: dryEyeProducts || [],
       providerPlus: providerPlus || false,
       provider: provider || false,
       partner: partner || false,

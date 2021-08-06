@@ -216,6 +216,13 @@ functions:
           path: practices
           method: delete
           cors: true
+  practices-clean:
+    handler: handlers/practices/clean.main
+    events:
+      - http:
+          path: practices-clean
+          method: post
+          cors: true
   # CUSTOMERS
   customers-list:
     handler: handlers/customers/list.main

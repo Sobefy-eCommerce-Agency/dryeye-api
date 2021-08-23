@@ -21,7 +21,7 @@ export default function handler(lambda, allowAll = false) {
       headers: {
         "Access-Control-Allow-Origin": allowAll
           ? "*"
-          : "https://shop.dryeyerescue.com",
+          : "https://wholesale.dryeyerescue.com",
         "Access-Control-Allow-Credentials": true,
       },
     };

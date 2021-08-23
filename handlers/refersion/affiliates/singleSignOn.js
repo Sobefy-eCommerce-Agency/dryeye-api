@@ -27,7 +27,7 @@ export const main = async (event) => {
     statusCode,
     body: JSON.stringify(body),
     headers: {
-      "Access-Control-Allow-Origin": "https://shop.dryeyerescue.com",
+      "Access-Control-Allow-Origin": "https://wholesale.dryeyerescue.com",
       "Access-Control-Allow-Credentials": true,
     },
   };

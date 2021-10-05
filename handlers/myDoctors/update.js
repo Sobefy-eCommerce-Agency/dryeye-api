@@ -4,7 +4,15 @@ import { createAffiliate, getAffiliate } from "../../utils/fetch";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const { doctor, customer, firstName, lastName, email, practice } = data;
+  const {
+    doctor,
+    customer,
+    firstName,
+    lastName,
+    email,
+    practice,
+    createAffiliateAccount,
+  } = data;
   const params = {
     TableName: process.env.my_doctors_table,
     Key: {
@@ -12,12 +20,13 @@ export const main = handler(async (event) => {
       owner: customer,
     },
     UpdateExpression:
-      "SET firstName = :firstName, lastName = :lastName, email = :email, practice = :practice",
+      "SET firstName = :firstName, lastName = :lastName, email = :email, practice = :practice, createAffiliateAccount = :createAffiliateAccount",
     ExpressionAttributeValues: {
       ":firstName": firstName || null,
       ":lastName": lastName || null,
       ":email": email || null,
       ":practice": practice || null,
+      ":createAffiliateAccount": createAffiliateAccount || false,
     },
     ReturnValues: "ALL_NEW",
   };
@@ -25,13 +34,12 @@ export const main = handler(async (event) => {
   await dynamoDb.update(params);
 
   // Refersion - Get Afilliate ID
-  if (email && firstName && lastName) {
-    const affiliateID = await getAffiliate(email);
-    if (affiliateID.data?.data?.affiliates?.length > 0) {
-      // Refersion - Edit Afilliate
-      console.log(affiliateID.data.data.affiliates[0].id);
-    } else {
-      // Refersion - Create Afilliate
+  if (email) {
+    const affilliate = await getAffiliate(email);
+    const isValidAffiliate = affilliate.data?.data?.affiliates?.length > 0;
+
+    if (createAffiliateAccount && !isValidAffiliate) {
+      // Create affiliate
       const affiliate = await createAffiliate({
         email,
         first_name: firstName,
@@ -39,7 +47,10 @@ export const main = handler(async (event) => {
         phone: null,
         send_welcome: true,
       });
-      console.log(affiliate);
+      console.log(`Affiliate created: ${affiliate}`);
+    } else {
+      // Remove affiliate
+      console.log(`Removing affiliate: ${email}`);
     }
   }
 

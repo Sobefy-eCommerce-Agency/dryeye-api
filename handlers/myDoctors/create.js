@@ -1,11 +1,19 @@
 import * as uuid from "uuid";
+
 import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
 import { createAffiliate, getAffiliate } from "../../utils/fetch";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
-  const { firstName, lastName, email, practice, customer } = data;
+  const {
+    firstName,
+    lastName,
+    email,
+    practice,
+    customer,
+    createAffiliateAccount,
+  } = data;
 
   // Check if the customer has practices
   const doctorParams = {
@@ -23,6 +31,7 @@ export const main = handler(async (event) => {
         lastName,
         email,
         practice,
+        createAffiliateAccount,
         owner: customer,
         doctor: uuid.v1(),
         createdAt: Date.now(),
@@ -30,14 +39,14 @@ export const main = handler(async (event) => {
     };
     await dynamoDb.put(params);
 
-    // Refersion - Get Afilliate ID
-    if (email && firstName && lastName) {
-      const affiliateID = await getAffiliate(email);
-      if (affiliateID.data?.data?.affiliates?.length > 0) {
-        // Refersion - Edit Afilliate
-        console.log(affiliateID.data.data.affiliates[0].id);
-      } else {
-        // Refersion - Create Afilliate
+    // Refersion - Create Affiliate Account
+    // Get Afilliate ID
+    if (email) {
+      const affilliate = await getAffiliate(email);
+      const isValidAffiliate = affilliate.data?.data?.affiliates?.length > 0;
+
+      if (createAffiliateAccount && !isValidAffiliate) {
+        // Create affiliate
         const affiliate = await createAffiliate({
           email,
           first_name: firstName,
@@ -45,7 +54,10 @@ export const main = handler(async (event) => {
           phone: null,
           send_welcome: true,
         });
-        console.log(affiliate);
+        console.log(`Affiliate created: ${affiliate}`);
+      } else {
+        // Remove affiliate
+        console.log(`removing affiliate: ${email}`);
       }
     }
 

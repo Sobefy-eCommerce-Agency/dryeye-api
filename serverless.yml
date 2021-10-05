@@ -24,6 +24,7 @@ provider:
     my_doctors_table: ${env:TABLE_MY_DOCTORS}
     practices_table: ${env:TABLE_PRACTICES}
     webhook_verify_hash: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH}
+    webhook_verify_hash_retail: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH_RETAIL}
     services_and_treatments_table: dryeye-services-and-treatments
     refersion_host: ${env:REFERSION_HOST}
     refersion_graphql_host: ${env:REFERSION_GRAPHQL_HOST}
@@ -110,27 +111,6 @@ functions:
           path: patients/delete
           method: delete
           cors: true
-  webhook-customers-create:
-    handler: handlers/webhooks/customer/createCustomer.main
-    events:
-      - http:
-          path: webhooks/customer/create-customer
-          method: post
-          cors: true
-  webhook-customers-update:
-    handler: handlers/webhooks/customer/updateCustomer.main
-    events:
-      - http:
-          path: webhooks/customer/update-customer
-          method: post
-          cors: true
-  webhook-customers-delete:
-    handler: handlers/webhooks/customer/deleteCustomer.main
-    events:
-      - http:
-          path: webhooks/customer/delete-customer
-          method: post
-          cors: true
   doctors-get:
     handler: handlers/doctors/getDoctor.main
     events:
@@ -173,6 +153,37 @@ functions:
           path: my-doctors
           method: delete
           cors: true
+
+  # WEBHOOKS
+  webhook-customers-create:
+    handler: handlers/webhooks/customer/createCustomer.main
+    events:
+      - http:
+          path: webhooks/customer/create-customer
+          method: post
+          cors: true
+  webhook-customers-update:
+    handler: handlers/webhooks/customer/updateCustomer.main
+    events:
+      - http:
+          path: webhooks/customer/update-customer
+          method: post
+          cors: true
+  webhook-customers-delete:
+    handler: handlers/webhooks/customer/deleteCustomer.main
+    events:
+      - http:
+          path: webhooks/customer/delete-customer
+          method: post
+          cors: true
+  webhook-order-creation:
+    handler: handlers/webhooks/retail/order/orderCreation.main
+    events:
+      - http:
+          path: webhooks/retail/order/order-creation
+          method: post
+          cors: true
+
   # PRACTICES
   practice-get:
     handler: handlers/practices/get.main

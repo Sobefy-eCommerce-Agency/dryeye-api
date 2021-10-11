@@ -61,3 +61,23 @@ export const getAffiliateSingleSignOnToken = async (affiliateID) => {
   });
   return singleSignOnToken;
 };
+
+export const createConversionTrigger = async (affiliateID, type, trigger) => {
+  const body = {
+    type,
+    trigger,
+    affiliate_code: affiliateID,
+  };
+
+  const conversionTrigger = await axios({
+    method: "post",
+    url: `${process.env.refersion_host}/api/new_affiliate_trigger`,
+    headers: {
+      "Content-type": "application/json",
+      "Refersion-Secret-Key": process.env.refersion_secret_key,
+      "Refersion-Public-Key": process.env.refersion_public_key,
+    },
+    data: JSON.stringify(body),
+  });
+  return conversionTrigger;
+};

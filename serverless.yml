@@ -295,6 +295,16 @@ functions:
           path: affiliates/create
           method: post
           cors: true
+  # CUSTOM SERVICES
+  # BULK EDIT PRACTICES
+  bulk-practices:
+    handler: handlers/custom/bulkPractices.main
+    timeout: 240
+    events:
+      - http:
+          path: custom/bulk-practices
+          method: post
+          cors: true
 
 # Create our resources with separate CloudFormation templates
 resources:

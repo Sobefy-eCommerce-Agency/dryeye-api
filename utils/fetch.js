@@ -5,7 +5,7 @@ export const getAffiliate = async (email) => {
   const query = {
     query: `{affiliates(email:\"${email}\"){id}}`,
   };
-  const affiliateID = await axios({
+  const response = await axios({
     method: "post",
     url: process.env.refersion_graphql_host,
     headers: {
@@ -14,7 +14,7 @@ export const getAffiliate = async (email) => {
     },
     data: JSON.stringify(query),
   });
-  return affiliateID;
+  return response;
 };
 
 export const createAffiliate = async ({
@@ -41,6 +41,17 @@ export const createAffiliate = async ({
       "Refersion-Public-Key": process.env.refersion_public_key,
     },
     data: JSON.stringify(body),
+  }).catch(function (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
   });
   return affiliate;
 };

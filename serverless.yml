@@ -23,6 +23,7 @@ provider:
     doctors_table: ${env:TABLE_DOCTORS}
     my_doctors_table: ${env:TABLE_MY_DOCTORS}
     practices_table: ${env:TABLE_PRACTICES}
+    conversion_triggers_table: ${env:TABLE_CONVERSION_TRIGGERS}
     webhook_verify_hash: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH}
     webhook_verify_hash_retail: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH_RETAIL}
     services_and_treatments_table: dryeye-services-and-treatments

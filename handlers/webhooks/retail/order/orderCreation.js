@@ -1,6 +1,6 @@
 import handler from "../../../../libs/webhook-handler-lib";
 import dynamoDb from "../../../../libs/dynamodb-lib";
-import { createConversionTrigger, getAffiliate } from "../../../../utils/fetch";
+import { createConversionTrigger } from "../../../../utils/fetch";
 // import dynamoDb from "../../../libs/dynamodb-lib";
 const crypto = require("crypto");
 
@@ -78,15 +78,11 @@ export const main = handler(async (event) => {
         return response;
       }
       const doctor = result.Item;
-      const { email: doctorEmail, createAffiliateAccount } = doctor;
+      const { createAffiliateAccount, affiliateID } = doctor;
 
       if (createAffiliateAccount) {
-        const affiliate = await getAffiliate(doctorEmail);
-        const isValidAffiliate = affiliate.data?.data?.affiliates?.length > 0;
-        if (isValidAffiliate) {
-          const affiliateID = String(affiliate.data.data.affiliates[0].id);
+        if (affiliateID) {
           const conversionType = "EMAIL";
-          console.log(isValidAffiliate);
           console.log(affiliateID);
           console.log(customerEmail);
           const conversionTrigger = await createConversionTrigger(

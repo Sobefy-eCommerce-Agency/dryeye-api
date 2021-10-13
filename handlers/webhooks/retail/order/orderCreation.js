@@ -1,3 +1,5 @@
+import * as uuid from "uuid";
+
 import handler from "../../../../libs/webhook-handler-lib";
 import dynamoDb from "../../../../libs/dynamodb-lib";
 import { createConversionTrigger } from "../../../../utils/fetch";
@@ -39,7 +41,12 @@ export const main = handler(async (event) => {
     at the end remember to repond 200 to shopify to let them know that everything worked
     */
   const data = JSON.parse(event.body);
-  const { email: customerEmail, note_attributes } = data;
+  const {
+    email: customerEmail,
+    note_attributes,
+    customer,
+    number: orderNumber,
+  } = data;
 
   // Check if the note_attributes are valid
   if (note_attributes && Array.isArray(note_attributes)) {
@@ -52,14 +59,26 @@ export const main = handler(async (event) => {
     const ownerIDAttribute = note_attributes.filter(
       (attribute) => attribute.name === "owner-id"
     );
-    // const practiceID =
-    //   practiceIDAttribute.length === 1 ? practiceIDAttribute[0].value : "";
+
+    const practiceID =
+      practiceIDAttribute.length === 1 ? practiceIDAttribute[0].value : "";
     const doctorID =
       doctorIDAttribute.length === 1 ? doctorIDAttribute[0].value : "";
     const ownerID =
-      practiceIDAttribute.length === 1 ? ownerIDAttribute[0].value : "";
+      ownerIDAttribute.length === 1 ? ownerIDAttribute[0].value : "";
 
     // Check if the doctor has a referral account
+    let affiliateID = "";
+    let triggeredEntity = "";
+    let practiceOwner = "";
+    let customerID = customer.id;
+    let triggeredAt = "ORDER_CREATION";
+    let triggerType = "EMAIL";
+    let trigger = customerEmail;
+    let selectedPractice = practiceID;
+    let selectedDoctor = doctorID;
+    let selectedPracticeOwner = ownerID;
+
     if (doctorID && ownerID) {
       const doctorParams = {
         TableName: process.env.my_doctors_table,
@@ -78,22 +97,79 @@ export const main = handler(async (event) => {
         return response;
       }
       const doctor = result.Item;
-      const { createAffiliateAccount, affiliateID } = doctor;
+      const { createAffiliateAccount, affiliateID: doctorAffiliateID } = doctor;
 
       if (createAffiliateAccount) {
-        if (affiliateID) {
-          const conversionType = "EMAIL";
-          console.log(affiliateID);
-          console.log(customerEmail);
-          const conversionTrigger = await createConversionTrigger(
-            affiliateID,
-            conversionType,
-            customerEmail
-          );
-          console.log(conversionTrigger);
+        if (doctorAffiliateID) {
+          affiliateID = doctorAffiliateID;
+          triggeredEntity = "DOCTOR";
         }
       }
-      return;
+    } else if (practiceID) {
+      // Add a conversion trigger for the practice owner
+      const practiceParams = {
+        TableName: process.env.practices_table,
+        KeyConditionExpression: "practice = :practiceId",
+        ExpressionAttributeValues: {
+          ":practiceId": practiceID,
+        },
+      };
+      const result = await dynamoDb.query(practiceParams);
+      const { Items } = result;
+      const selectedPractice = Items && Items.length === 1 ? Items[0] : null;
+      if (selectedPractice) {
+        const { doctor: practiceOwnerID } = selectedPractice;
+
+        const selectedDoctorParams = {
+          TableName: process.env.doctors_table,
+          KeyConditionExpression: "doctor = :doctor",
+          ExpressionAttributeValues: {
+            ":doctor": practiceOwnerID,
+          },
+        };
+        const selectedDoctorResult = await dynamoDb.query(selectedDoctorParams);
+        const { Items } = selectedDoctorResult;
+        const selectedDoctor = Items && Items.length === 1 ? Items[0] : null;
+
+        const { affiliateID: selectedDoctorAffiliateID } = selectedDoctor;
+        affiliateID = selectedDoctorAffiliateID;
+        triggeredEntity = "PRACTICE_OWNER";
+        practiceOwner = practiceOwnerID;
+      }
+    }
+
+    const conversionTrigger = await createConversionTrigger(
+      affiliateID,
+      triggerType,
+      trigger
+    );
+
+    const conversionTriggerID = conversionTrigger?.data?.trigger_id || "";
+
+    // Save conversion trigger to conversion-triggers table
+    if (conversionTriggerID) {
+      const params = {
+        TableName: process.env.conversion_triggers_table,
+        Item: {
+          affiliateID,
+          triggeredAt,
+          triggeredEntity,
+          triggerType,
+          trigger,
+          selectedPractice,
+          selectedDoctor,
+          selectedPracticeOwner,
+          customerID,
+          orderNumber,
+          practiceOwner,
+          id: uuid.v1(),
+          triggerID: conversionTriggerID,
+          customer: customer.id,
+          createdAt: Date.now(),
+        },
+      };
+      await dynamoDb.put(params);
+      return 200;
     }
   }
 

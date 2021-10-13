@@ -57,6 +57,7 @@ functions:
   # - authorizer: authenticate using the AWS IAM role
   create:
     handler: create.main
+    timeout: 80
     events:
       - http:
           path: patients
@@ -67,6 +68,7 @@ functions:
     # - path: url path is /notes/{id}
     # - method: GET request
     handler: get.main
+    timeout: 80
     events:
       - http:
           path: patients/{id}
@@ -77,6 +79,7 @@ functions:
     # - path: url path is /notes/{id}
     # - method: GET request
     handler: search.main
+    timeout: 80
     events:
       - http:
           path: patients/search
@@ -87,6 +90,7 @@ functions:
     # - path: url path is /notes
     # - method: GET request
     handler: list.main
+    timeout: 80
     events:
       - http:
           path: patients
@@ -97,6 +101,7 @@ functions:
     # - path: url path is /notes/{id}
     # - method: PUT request
     handler: update.main
+    timeout: 80
     events:
       - http:
           path: patients/update
@@ -107,6 +112,7 @@ functions:
     # - path: url path is /notes/{id}
     # - method: DELETE request
     handler: delete.main
+    timeout: 80
     events:
       - http:
           path: patients/delete
@@ -114,6 +120,7 @@ functions:
           cors: true
   doctors-get:
     handler: handlers/doctors/getDoctor.main
+    timeout: 80
     events:
       - http:
           path: doctors
@@ -121,6 +128,7 @@ functions:
           cors: true
   doctors-create:
     handler: handlers/doctors/createDoctor.main
+    timeout: 80
     events:
       - http:
           path: doctors
@@ -128,6 +136,7 @@ functions:
           cors: true
   my-doctors-list:
     handler: handlers/myDoctors/list.main
+    timeout: 80
     events:
       - http:
           path: my-doctors
@@ -135,6 +144,7 @@ functions:
           cors: true
   my-doctors-create:
     handler: handlers/myDoctors/create.main
+    timeout: 80
     events:
       - http:
           path: my-doctors
@@ -142,6 +152,7 @@ functions:
           cors: true
   my-doctors-update:
     handler: handlers/myDoctors/update.main
+    timeout: 80
     events:
       - http:
           path: my-doctors
@@ -149,6 +160,7 @@ functions:
           cors: true
   my-doctors-delete:
     handler: handlers/myDoctors/delete.main
+    timeout: 80
     events:
       - http:
           path: my-doctors
@@ -158,6 +170,7 @@ functions:
   # WEBHOOKS
   webhook-customers-create:
     handler: handlers/webhooks/customer/createCustomer.main
+    timeout: 80
     events:
       - http:
           path: webhooks/customer/create-customer
@@ -165,6 +178,7 @@ functions:
           cors: true
   webhook-customers-update:
     handler: handlers/webhooks/customer/updateCustomer.main
+    timeout: 80
     events:
       - http:
           path: webhooks/customer/update-customer
@@ -172,6 +186,7 @@ functions:
           cors: true
   webhook-customers-delete:
     handler: handlers/webhooks/customer/deleteCustomer.main
+    timeout: 80
     events:
       - http:
           path: webhooks/customer/delete-customer
@@ -179,6 +194,7 @@ functions:
           cors: true
   webhook-order-creation:
     handler: handlers/webhooks/retail/order/orderCreation.main
+    timeout: 80
     events:
       - http:
           path: webhooks/retail/order/order-creation
@@ -188,6 +204,7 @@ functions:
   # PRACTICES
   practice-get:
     handler: handlers/practices/get.main
+    timeout: 80
     events:
       - http:
           path: practice
@@ -195,6 +212,7 @@ functions:
           cors: true
   practices-list:
     handler: handlers/practices/list.main
+    timeout: 80
     events:
       - http:
           path: practices
@@ -202,6 +220,7 @@ functions:
           cors: true
   practices-create:
     handler: handlers/practices/create.main
+    timeout: 80
     events:
       - http:
           path: practices
@@ -209,6 +228,7 @@ functions:
           cors: true
   practices-update:
     handler: handlers/practices/update.main
+    timeout: 80
     events:
       - http:
           path: practices
@@ -216,6 +236,7 @@ functions:
           cors: true
   practices-update-cms:
     handler: handlers/practices/updateCMS.main
+    timeout: 80
     events:
       - http:
           path: practices-cms
@@ -223,6 +244,7 @@ functions:
           cors: true
   practices-delete:
     handler: handlers/practices/delete.main
+    timeout: 80
     events:
       - http:
           path: practices
@@ -230,6 +252,7 @@ functions:
           cors: true
   practices-clean:
     handler: handlers/practices/clean.main
+    timeout: 80
     events:
       - http:
           path: practices-clean
@@ -238,6 +261,7 @@ functions:
   # CUSTOMERS
   customers-list:
     handler: handlers/customers/list.main
+    timeout: 80
     events:
       - http:
           path: customers
@@ -246,6 +270,7 @@ functions:
   # SERVICES & TREATMENTS
   services-and-treatments-list:
     handler: handlers/servicesAndTreatments/list.main
+    timeout: 80
     events:
       - http:
           path: services-and-treatments
@@ -253,6 +278,7 @@ functions:
           cors: true
   services-and-treatments-create:
     handler: handlers/servicesAndTreatments/create.main
+    timeout: 80
     events:
       - http:
           path: services-and-treatments
@@ -260,6 +286,7 @@ functions:
           cors: true
   services-and-treatments-update:
     handler: handlers/servicesAndTreatments/update.main
+    timeout: 80
     events:
       - http:
           path: services-and-treatments
@@ -267,6 +294,7 @@ functions:
           cors: true
   services-and-treatments-delete:
     handler: handlers/servicesAndTreatments/delete.main
+    timeout: 80
     events:
       - http:
           path: services-and-treatments
@@ -276,6 +304,7 @@ functions:
   # REFERSION - Affiliates
   refersion-affiliates-check:
     handler: handlers/refersion/affiliates/check.main
+    timeout: 80
     events:
       - http:
           path: affiliates/check
@@ -283,6 +312,7 @@ functions:
           cors: true
   refersion-affiliates-single-sign-on:
     handler: handlers/refersion/affiliates/singleSignOn.main
+    timeout: 80
     events:
       - http:
           path: affiliates/single-sign-on

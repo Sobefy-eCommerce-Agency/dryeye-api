@@ -17,6 +17,36 @@ export const getAffiliate = async (email) => {
   return response;
 };
 
+export const searchAffiliate = async (email) => {
+  const body = {
+    keyword: email,
+  };
+
+  const affiliates = await axios({
+    method: "post",
+    url: `${process.env.refersion_host}/api/search_affiliates`,
+    headers: {
+      "Content-type": "application/json",
+      "Refersion-Secret-Key": process.env.refersion_secret_key,
+      "Refersion-Public-Key": process.env.refersion_public_key,
+    },
+    data: JSON.stringify(body),
+  }).catch(function (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
+
+  return affiliates;
+};
+
 export const createAffiliate = async ({
   first_name,
   last_name,
@@ -83,6 +113,41 @@ export const createConversionTrigger = async (affiliateID, type, trigger) => {
   const conversionTrigger = await axios({
     method: "post",
     url: `${process.env.refersion_host}/api/new_affiliate_trigger`,
+    headers: {
+      "Content-type": "application/json",
+      "Refersion-Secret-Key": process.env.refersion_secret_key,
+      "Refersion-Public-Key": process.env.refersion_public_key,
+    },
+    data: JSON.stringify(body),
+  }).catch(function (error) {
+    if (error.response) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.headers);
+    } else if (error.request) {
+      console.log(error.request);
+    } else {
+      console.log("Error", error.message);
+    }
+    console.log(error.config);
+  });
+  return conversionTrigger;
+};
+
+export const deleteConversionTrigger = async (
+  affiliate_code,
+  trigger,
+  type
+) => {
+  const body = {
+    affiliate_code,
+    trigger,
+    type,
+  };
+
+  const conversionTrigger = await axios({
+    method: "post",
+    url: `${process.env.refersion_host}/api/delete_affiliate_trigger`,
     headers: {
       "Content-type": "application/json",
       "Refersion-Secret-Key": process.env.refersion_secret_key,

@@ -1,74 +1,130 @@
 import handler from "../../../libs/handler-lib";
 import dynamoDb from "../../../libs/dynamodb-lib";
-import { createAffiliate, getAffiliate } from "../../../utils/fetch";
+import { createAffiliate, searchAffiliate } from "../../../utils/fetch";
 
-export const main = handler(async (event) => {
-  const data = JSON.parse(event.body);
-  const { key } = data;
-  if (key === process.env.sobefy_internal_key) {
-    // Get all doctors
-    const allDoctorsParams = {
-      TableName: process.env.doctors_table,
-      ExpressionAttributeNames: {
-        "#n": "first_name",
-        "#ln": "last_name",
-        "#e": "email",
-      },
-      Select: "SPECIFIC_ATTRIBUTES",
-      ProjectionExpression: "#n,#ln,#e",
-    };
-    const allDoctors = await dynamoDb.scan(allDoctorsParams);
-    if (allDoctors.Items) {
-      for (let i = 0; i < allDoctors.Items.length; i++) {
-        const currentDoctor = allDoctors.Items[i];
-        const { first_name, last_name, email, state, doctor } = currentDoctor;
-        if (email && first_name && last_name && state === "enabled") {
-          // Refersion - Check if theres an affiliate created
-          try {
-            const affiliateID = await getAffiliate(email);
-            console.log(
-              affiliateID.data?.data?.affiliates
-                ? JSON.stringify(affiliateID.data?.data?.affiliates)
-                : ""
-            );
-            if (affiliateID.data?.data?.affiliates?.length > 0) {
-              // Affiliate exists
-              const affiliate = affiliateID.data?.data?.affiliates[0];
-              const params = {
-                TableName: process.env.doctors_table,
-                Key: {
-                  doctor,
-                },
-                UpdateExpression: "SET affiliate_id = :affiliate_id",
-                ExpressionAttributeValues: {
-                  ":affiliate_id": affiliate || null,
-                },
-                ReturnValues: "NONE",
-              };
+export const main = handler(async () => {
+  // Get all doctors
+  const allDoctorsParams = {
+    TableName: process.env.doctors_table,
+    ExpressionAttributeNames: {
+      "#doc": "doctor",
+      "#e": "email",
+      "#st": "state",
+      "#fn": "first_name",
+      "#ln": "last_name",
+      "#ai": "affiliateID",
+    },
+    Select: "SPECIFIC_ATTRIBUTES",
+    ProjectionExpression: "#e,#st,#doc,#fn,#ln,#ai",
+  };
+  const allDoctors = await dynamoDb.scan(allDoctorsParams);
+  if (allDoctors.Items) {
+    let count = 0;
+    for (let i = 0; i < allDoctors.Items.length; i++) {
+      const currentDoctor = allDoctors.Items[i];
+      const {
+        email,
+        state,
+        doctor,
+        first_name,
+        last_name,
+        affiliateID: existingAffiliateID,
+      } = currentDoctor;
+      if (email && state === "enabled" && !existingAffiliateID) {
+        // Refersion - Check if theres an affiliate created
+        const affiliateID = await searchAffiliate(email);
+        const validAffiliate =
+          affiliateID?.data?.results?.length === 1
+            ? affiliateID?.data?.results[0]
+            : null;
 
-              await dynamoDb.update(params);
-            } else {
-              // Refersion - Create Afilliate
-              try {
-                const affiliate = await createAffiliate({
-                  email,
-                  first_name,
-                  last_name,
-                  phone: null,
-                  send_welcome: false,
-                });
-                console.log(affiliate);
-              } catch (e) {
-                console.log(e);
-              }
-            }
-          } catch (e) {
-            console.log(e);
+        if (!validAffiliate) {
+          count = count + 1;
+          if (count < 10) {
+            const newAffiliate = await createAffiliate({
+              email,
+              first_name,
+              last_name,
+              phone: null,
+              send_welcome: false,
+            });
+
+            console.log(count);
+            console.log(newAffiliate?.data);
+            const newAffiliateID = newAffiliate?.data?.id || "";
+            const newAffiliateOfferID = newAffiliate?.data?.id || "";
+
+            const updateDoctorParams = {
+              TableName: process.env.doctors_table,
+              Key: {
+                doctor,
+              },
+              UpdateExpression:
+                "SET affiliateID = :affiliateID, offerID = :offerID",
+              ExpressionAttributeValues: {
+                ":affiliateID": newAffiliateID || "",
+                ":offerID": newAffiliateOfferID | "",
+              },
+              ReturnValues: "NONE",
+            };
+
+            await dynamoDb.update(updateDoctorParams);
+            // console.log(count);
+            // console.log(validAffiliate);
+            // const { id, offer_id } = validAffiliate;
+            // const params = {
+            //   TableName: process.env.doctors_table,
+            //   Key: {
+            //     doctor,
+            //   },
+            //   UpdateExpression:
+            //     "SET affiliateID = :affiliateID, offerID = :offerID",
+            //   ExpressionAttributeValues: {
+            //     ":affiliateID": id || "",
+            //     ":offerID": offer_id | "",
+            //   },
+            //   ReturnValues: "NONE",
+            // };
+            // await dynamoDb.update(params);
+          } else {
+            return 200;
           }
         }
+        // } else if (!existingAffiliateID) {
+        //   console.log(existingAffiliateID);
+        //   number = number + 1;
+        //   console.log(number);
+        //   const newAffiliate = await createAffiliate({
+        //     email,
+        //     first_name,
+        //     last_name,
+        //     phone: null,
+        //     send_welcome: false,
+        //   });
+
+        //   const newAffiliateID = newAffiliate?.data?.id || "";
+        //   const newAffiliateOfferID = newAffiliate?.data?.id || "";
+
+        //   const updateDoctorParams = {
+        //     TableName: process.env.doctors_table,
+        //     Key: {
+        //       doctor,
+        //     },
+        //     UpdateExpression:
+        //       "SET affiliateID = :affiliateID, offerID = :offerID",
+        //     ExpressionAttributeValues: {
+        //       ":affiliateID": newAffiliateID || "",
+        //       ":offerID": newAffiliateOfferID | "",
+        //     },
+        //     ReturnValues: "NONE",
+        //   };
+
+        //   await dynamoDb.update(updateDoctorParams);
+        // }
       }
-      return { status: 200 };
     }
+    return { status: 200 };
   }
+
   return { status: 500 };
 }, true);

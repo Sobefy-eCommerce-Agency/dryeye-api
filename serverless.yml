@@ -218,6 +218,14 @@ functions:
           path: practices
           method: get
           cors: true
+  practices-list-light:
+    handler: handlers/practices/list-light.main
+    timeout: 80
+    events:
+      - http:
+          path: practices-light
+          method: get
+          cors: true
   practices-create:
     handler: handlers/practices/create.main
     timeout: 80

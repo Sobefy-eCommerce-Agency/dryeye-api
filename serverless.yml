@@ -24,6 +24,7 @@ provider:
     my_doctors_table: ${env:TABLE_MY_DOCTORS}
     practices_table: ${env:TABLE_PRACTICES}
     conversion_triggers_table: ${env:TABLE_CONVERSION_TRIGGERS}
+    patients_by_practice_table: ${env:TABLE_PATIENTS_BY_PRACTICE}
     webhook_verify_hash: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH}
     webhook_verify_hash_retail: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH_RETAIL}
     services_and_treatments_table: dryeye-services-and-treatments
@@ -134,12 +135,22 @@ functions:
           path: doctors
           method: post
           cors: true
+
+  # MY DOCTORS
   my-doctors-list:
     handler: handlers/myDoctors/list.main
     timeout: 80
     events:
       - http:
           path: my-doctors
+          method: get
+          cors: true
+  my-doctors-list-light:
+    handler: handlers/myDoctors/list-light.main
+    timeout: 80
+    events:
+      - http:
+          path: my-doctors-light
           method: get
           cors: true
   my-doctors-create:
@@ -334,6 +345,40 @@ functions:
           path: affiliates/create
           method: post
           cors: true
+  # PATIENTS BY PRACTICE
+  patients-by-practice-get:
+    handler: handlers/patients/get.main
+    timeout: 80
+    events:
+      - http:
+          path: patients-by-practice/single
+          method: get
+          cors: true
+  patients-by-practice-create:
+    handler: handlers/patients/create.main
+    timeout: 80
+    events:
+      - http:
+          path: patients-by-practice
+          method: post
+          cors: true
+  patients-by-practice-update:
+    handler: handlers/patients/update.main
+    timeout: 80
+    events:
+      - http:
+          path: patients-by-practice
+          method: put
+          cors: true
+  patients-by-practice-delete:
+    handler: handlers/patients/delete.main
+    timeout: 80
+    events:
+      - http:
+          path: patients-by-practice
+          method: delete
+          cors: true
+
   # CUSTOM SERVICES
   # BULK EDIT PRACTICES
   bulk-practices:

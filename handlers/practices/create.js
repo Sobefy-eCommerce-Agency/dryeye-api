@@ -41,6 +41,7 @@ export const main = handler(async (event) => {
     provider,
     partner,
     active,
+    practice_image,
   } = data;
 
   const practiceID = uuid.v1();
@@ -86,6 +87,7 @@ export const main = handler(async (event) => {
       provider: provider || false,
       partner: partner || false,
       active: active || false,
+      practice_image: practice_image || "",
     },
   };
   await dynamoDb.put(params);

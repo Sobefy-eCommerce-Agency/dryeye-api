@@ -3,6 +3,7 @@ import * as uuid from "uuid";
 import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
 import { createAffiliate, getAffiliate } from "../../utils/fetch";
+import { GenerateImageBuffer } from "../../utils/utils";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
@@ -13,6 +14,7 @@ export const main = handler(async (event) => {
     practice,
     customer,
     createAffiliateAccount,
+    profilePicture,
   } = data;
 
   // Get Afilliate ID
@@ -39,6 +41,15 @@ export const main = handler(async (event) => {
     }
   }
 
+  // Generate Image Buffer
+  let imageBuffer = [];
+
+  // Add image gallery
+  if (profilePicture && profilePicture.length > 0) {
+    const profilePictureBuffer = await GenerateImageBuffer(profilePicture);
+    imageBuffer = profilePictureBuffer;
+  }
+
   const params = {
     TableName: process.env.my_doctors_table,
     Item: {
@@ -48,6 +59,7 @@ export const main = handler(async (event) => {
       practice,
       createAffiliateAccount,
       affiliateID,
+      profilePicture: imageBuffer,
       owner: customer,
       doctor: uuid.v1(),
       createdAt: Date.now(),

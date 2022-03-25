@@ -38,6 +38,18 @@ export const main = handler(async (event) => {
       }
     }
     if (practicesResult && practicesResult.Items.length > 0) {
+      // Fetch doctors
+      let allDoctorsTable = [];
+      if (event.queryStringParameters?.all_doctors) {
+        const doctorsParams = {
+          TableName: process.env.my_doctors_table,
+        };
+        const doctorsResult = await dynamoDb.scan(doctorsParams);
+        if (doctorsResult && doctorsResult.Items.length > 0) {
+          allDoctorsTable = doctorsResult.Items;
+        }
+      }
+
       for (let i = 0; i < practicesResult.Items.length; i++) {
         const currentPractice = practicesResult.Items[i];
         const { practice } = currentPractice;
@@ -63,17 +75,17 @@ export const main = handler(async (event) => {
         }
         // Add all doctors property
         let doctors = null;
-        if (event.queryStringParameters?.all_doctors) {
-          const doctorsParams = {
-            TableName: process.env.my_doctors_table,
-            FilterExpression: "practice = :practice",
-            ExpressionAttributeValues: {
-              ":practice": practice,
-            },
-          };
-          const doctorsResult = await dynamoDb.scan(doctorsParams);
-          if (doctorsResult && doctorsResult.Items.length > 0) {
-            doctors = doctorsResult.Items;
+        if (
+          event.queryStringParameters?.all_doctors &&
+          allDoctorsTable &&
+          allDoctorsTable.length > 0
+        ) {
+          // filter doctors by practice
+          const filteredDoctors = allDoctorsTable.filter(
+            (doc) => doc.practice === practice
+          );
+          if (filteredDoctors.length > 0) {
+            doctors = filteredDoctors;
           }
         }
         response.Items.push({

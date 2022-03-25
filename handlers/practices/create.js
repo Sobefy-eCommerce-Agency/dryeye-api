@@ -1,6 +1,11 @@
+import AWS from "aws-sdk";
 import * as uuid from "uuid";
 import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
+import * as fileType from "file-type";
+
+const s3 = new AWS.S3();
+const allowedMimes = ["image/jpeg", "image/png", "image/jpg"];
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
@@ -42,9 +47,43 @@ export const main = handler(async (event) => {
     partner,
     active,
     practice_image,
+    imageGallery,
   } = data;
 
   const practiceID = uuid.v1();
+
+  const imageGalleryArray = [];
+
+  // Add image gallery
+  if (imageGallery && imageGallery.length > 0) {
+    for (let index = 0; index < imageGallery.length; index++) {
+      const image = imageGallery[index];
+      const { id, base64 } = image;
+      console.log("image", image);
+      const imageData = base64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(imageData, "base64");
+      const fileInfo = await fileType.fromBuffer(buffer);
+      const detectedExt = fileInfo.ext;
+      const detectedMime = fileInfo.mime;
+      const key = `${id}.${detectedExt}`;
+
+      if (!allowedMimes.includes(detectedMime)) {
+        return { status: 400, message: "mime not allowed" };
+      }
+
+      await s3
+        .putObject({
+          Body: buffer,
+          Key: key,
+          ContentType: detectedMime,
+          Bucket: process.env.uploads_bucket,
+          ACL: "public-read",
+        })
+        .promise();
+
+      imageGalleryArray.push(key);
+    }
+  }
 
   const params = {
     TableName: process.env.practices_table,
@@ -88,6 +127,7 @@ export const main = handler(async (event) => {
       partner: partner || false,
       active: active || false,
       practice_image: practice_image || "",
+      imageGallery: imageGalleryArray,
     },
   };
   await dynamoDb.put(params);

@@ -34,6 +34,7 @@ provider:
     refersion_public_key: ${env:REFERSION_PUBLIC_KEY}
     refersion_secret_key: ${env:REFERSION_SECRET_KEY}
     sobefy_internal_key: ${env:SOBEFY_INTERNAL_KEY}
+    uploads_bucket: ${env:UPLOADS_BUCKET_NAME}
 
   # 'iamRoleStatements' defines the permission policy for the Lambda function.
   # In this case Lambda functions are granted with permissions to access DynamoDB.
@@ -47,7 +48,10 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:us-east-1:*:*"
+        - s3:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:*:*
+        - arn:aws:s3:::dryeyerescue-images/*
 
 functions:
   # Defines an HTTP API endpoint that calls the main function in create.js
@@ -239,7 +243,7 @@ functions:
           cors: true
   practices-create:
     handler: handlers/practices/create.main
-    timeout: 80
+    timeout: 30
     events:
       - http:
           path: practices

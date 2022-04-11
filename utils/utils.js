@@ -13,30 +13,35 @@ export const GenerateImageBuffer = async (imageGallery) => {
 
   for (let index = 0; index < imageGallery.length; index++) {
     const image = imageGallery[index];
-    const { id, base64 } = image;
-    const imageData = base64.replace(/^data:image\/\w+;base64,/, "");
-    const buffer = Buffer.from(imageData, "base64");
-    const fileInfo = await fileType.fromBuffer(buffer);
-    const detectedExt = fileInfo.ext;
-    const detectedMime = fileInfo.mime;
-    const key = `${id}.${detectedExt}`;
+    const { id, base64, imageURL } = image;
 
-    if (!allowedMimes.includes(detectedMime)) {
-      // return { status: 400, message: "mime not allowed" };
-      return;
+    if (imageURL !== "" && imageURL !== null) {
+      imageGalleryArray.push(id + imageURL.split(id)[1]);
+    } else {
+      const imageData = base64.replace(/^data:image\/\w+;base64,/, "");
+      const buffer = Buffer.from(imageData, "base64");
+      const fileInfo = await fileType.fromBuffer(buffer);
+      const detectedExt = fileInfo.ext;
+      const detectedMime = fileInfo.mime;
+      const key = `${id}.${detectedExt}`;
+
+      if (!allowedMimes.includes(detectedMime)) {
+        // return { status: 400, message: "mime not allowed" };
+        return;
+      }
+
+      await s3
+        .putObject({
+          Body: buffer,
+          Key: key,
+          ContentType: detectedMime,
+          Bucket: process.env.uploads_bucket,
+          ACL: "public-read",
+        })
+        .promise();
+
+      imageGalleryArray.push(key);
     }
-
-    await s3
-      .putObject({
-        Body: buffer,
-        Key: key,
-        ContentType: detectedMime,
-        Bucket: process.env.uploads_bucket,
-        ACL: "public-read",
-      })
-      .promise();
-
-    imageGalleryArray.push(key);
   }
 
   return imageGalleryArray;

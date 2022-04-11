@@ -1,6 +1,7 @@
 import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
 import { createAffiliate, getAffiliate } from "../../utils/fetch";
+import { GenerateImageBuffer } from "../../utils/utils";
 
 export const main = handler(async (event) => {
   const data = JSON.parse(event.body);
@@ -12,6 +13,7 @@ export const main = handler(async (event) => {
     email,
     practice,
     createAffiliateAccount,
+    profilePicture,
   } = data;
 
   // Get Afilliate ID
@@ -38,6 +40,18 @@ export const main = handler(async (event) => {
     }
   }
 
+  // Generate Image Buffer
+  let imageBuffer = [];
+
+  // Add image gallery
+  if (profilePicture && profilePicture.length > 0) {
+    const profilePictureBuffer = await GenerateImageBuffer(profilePicture);
+
+    if (profilePictureBuffer && profilePictureBuffer.length > 0) {
+      imageBuffer = profilePictureBuffer;
+    }
+  }
+
   const params = {
     TableName: process.env.my_doctors_table,
     Key: {
@@ -45,7 +59,7 @@ export const main = handler(async (event) => {
       owner: customer,
     },
     UpdateExpression:
-      "SET firstName = :firstName, lastName = :lastName, email = :email, practice = :practice, createAffiliateAccount = :createAffiliateAccount, affiliateID = :affiliateID",
+      "SET firstName = :firstName, lastName = :lastName, email = :email, practice = :practice, createAffiliateAccount = :createAffiliateAccount, affiliateID = :affiliateID, profilePicture = :profilePicture",
     ExpressionAttributeValues: {
       ":firstName": firstName || null,
       ":lastName": lastName || null,
@@ -53,6 +67,7 @@ export const main = handler(async (event) => {
       ":practice": practice || null,
       ":createAffiliateAccount": createAffiliateAccount || false,
       ":affiliateID": affiliateID || "",
+      ":profilePicture": imageBuffer,
     },
     ReturnValues: "ALL_NEW",
   };

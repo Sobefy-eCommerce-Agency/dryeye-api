@@ -241,6 +241,14 @@ functions:
           path: practices-light
           method: get
           cors: true
+  practices-list-wp:
+    handler: handlers/practices/list-wp.main
+    timeout: 80
+    events:
+      - http:
+          path: practices-wp
+          method: get
+          cors: true
   practices-create:
     handler: handlers/practices/create.main
     timeout: 30

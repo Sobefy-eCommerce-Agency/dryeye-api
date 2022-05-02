@@ -28,6 +28,7 @@ provider:
     webhook_verify_hash: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH}
     webhook_verify_hash_retail: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH_RETAIL}
     services_and_treatments_table: dryeye-services-and-treatments
+    wholesale_orders_table: ${env:TABLE_WHOLESALE_ORDERS}
     refersion_host: ${env:REFERSION_HOST}
     refersion_graphql_host: ${env:REFERSION_GRAPHQL_HOST}
     refersion_graphql_api_key: ${env:REFERSION_GRAPHQL_KEY}
@@ -264,6 +265,14 @@ functions:
       - http:
           path: practices
           method: put
+          cors: true
+  practices-update-products:
+    handler: handlers/practices/update-products.main
+    timeout: 80
+    events:
+      - http:
+          path: update-products
+          method: post
           cors: true
   practices-update-cms:
     handler: handlers/practices/updateCMS.main

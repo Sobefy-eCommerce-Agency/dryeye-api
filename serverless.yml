@@ -9,6 +9,8 @@ plugins:
   - serverless-offline
   - serverless-dotenv-plugin # Load .env as environment variables
 
+useDotenv: true
+
 provider:
   name: aws
   runtime: nodejs12.x

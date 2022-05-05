@@ -26,6 +26,33 @@ export const main = handler(async () => {
     return practice;
   });
 
+  // Get all doctors
+  const doctorsParams = {
+    TableName: process.env.my_doctors_table,
+  };
+  const doctorsResponse = await dynamoDb.scan(doctorsParams);
+  const doctors = doctorsResponse.Items;
+
+  const formattedDoctors = doctors.map((doc) => {
+    const { practice, firstName, lastName, profilePicture = [] } = doc;
+    return {
+      practice,
+      name: `${firstName} ${lastName}`,
+      image: profilePicture[0],
+    };
+  });
+
+  formattedItems = formattedItems.map((practice) => {
+    const { practice: practiceID } = practice;
+    const filteredDoctors = formattedDoctors.filter(
+      (doc) => doc.practice === practiceID
+    );
+    return {
+      ...practice,
+      doctors: filteredDoctors,
+    };
+  });
+
   // Get all services
   const servicesParams = {
     TableName: process.env.services_and_treatments_table,

@@ -38,7 +38,9 @@ export const main = handler(async () => {
     return {
       practice,
       name: `${firstName} ${lastName}`,
-      image: profilePicture[0],
+      image: profilePicture[0]
+        ? `https://dryeyerescue-images.s3.amazonaws.com/${profilePicture[0]}`
+        : "",
     };
   });
 

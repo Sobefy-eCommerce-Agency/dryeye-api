@@ -29,82 +29,79 @@ export const main = handler(async () => {
     TableName: process.env.practices_table,
   };
   const practicesResult = await dynamoDb.scan(allPractices);
-  const practices = practicesResult.Items;
+  const practicesList = practicesResult.Items;
 
   // Loop trough orders
   if (
     orders &&
     orders.length > 0 &&
-    practices &&
-    practices.length > 0 &&
+    practicesList &&
+    practicesList.length > 0 &&
     products &&
     products.length
   ) {
     const ordersToUpdate = [];
     for (const order of orders) {
-      const { customer_id, created_at, line_item_titles } = order;
+      const { customer_id, line_item_titles } = order;
       const productTitlesArray = line_item_titles.split(",");
       const matchedProducts = [];
 
       // Find practice of the order
-      const practiceFilter = practices.filter(
+      const practiceFilter = practicesList.filter(
         (practice) => practice.doctor === customer_id
       );
-      const practice =
-        practiceFilter && practiceFilter.length === 1
-          ? practiceFilter[0]
-          : null;
+      const practices =
+        practiceFilter && practiceFilter.length > 0 ? practiceFilter : null;
 
-      if (practice) {
-        const { dryEyeProducts, practice: practiceID } = practice;
+      if (practices) {
+        practices.forEach((practice) => {
+          const { dryEyeProducts, practice: practiceID } = practice;
 
-        // Calculate Matched products
-        productTitlesArray.forEach((productTitle) => {
-          const currentProductFilter = products.filter((product) => {
-            const {
-              title: currentProductTitle,
-              tags: currentProductTags,
-              id: currentProductID,
-            } = product;
-            const titleMatches = currentProductTitle === productTitle;
-            const hasNoLocatorTag = currentProductTags.includes("No Locator");
-            const productAlreadyIncluded =
-              dryEyeProducts.filter((prod) => prod === currentProductID)
-                .length > 0;
-            const isValid =
-              titleMatches && !hasNoLocatorTag && !productAlreadyIncluded;
+          // Calculate Matched products
+          productTitlesArray.forEach((productTitle) => {
+            const currentProductFilter = products.filter((product) => {
+              const {
+                title: currentProductTitle,
+                tags: currentProductTags,
+                id: currentProductID,
+              } = product;
+              const titleMatches = currentProductTitle === productTitle;
+              const hasNoLocatorTag = currentProductTags.includes("No Locator");
+              const productAlreadyIncluded =
+                dryEyeProducts.filter((prod) => prod === currentProductID)
+                  .length > 0;
+              const isValid =
+                titleMatches && !hasNoLocatorTag && !productAlreadyIncluded;
 
-            return isValid;
+              return isValid;
+            });
+            const currentProduct =
+              currentProductFilter && currentProductFilter.length === 1
+                ? currentProductFilter[0]
+                : null;
+
+            if (currentProduct) {
+              const { id } = currentProduct;
+              matchedProducts.push(id);
+            }
           });
-          const currentProduct =
-            currentProductFilter && currentProductFilter.length === 1
-              ? currentProductFilter[0]
-              : null;
 
-          if (currentProduct) {
-            const { id } = currentProduct;
-            matchedProducts.push({ id, createdAt: created_at });
+          if (matchedProducts && matchedProducts.length > 0) {
+            // Add data to main array
+            ordersToUpdate.push({
+              practice: practiceID,
+              products: matchedProducts,
+            });
           }
         });
-
-        if (matchedProducts && matchedProducts.length > 0) {
-          // Add data to main array
-          ordersToUpdate.push({
-            practice: practiceID,
-            products: matchedProducts,
-          });
-        }
       }
     }
 
     // Update Practices
     if (ordersToUpdate && ordersToUpdate.length > 0) {
-      for (const practice of practices) {
-        const {
-          practice: currentPracticeID,
-          doctor: currentDoctorID,
-          name: practiceName,
-        } = practice;
+      for (const practice of practicesList) {
+        const { practice: currentPracticeID, doctor: currentDoctorID } =
+          practice;
 
         // Filter orders to update
         const currentOrdersToUpdate = ordersToUpdate.filter(
@@ -124,7 +121,10 @@ export const main = handler(async () => {
 
           // Update Practice
           if (productsToAdd && productsToAdd.length > 0) {
-            console.log("productsToAdd", practiceName, productsToAdd);
+            // Get unique products to add
+            const uniqueProducts = [
+              ...new Set(productsToAdd.map((item) => item)),
+            ];
 
             const updatePracticeParams = {
               TableName: process.env.practices_table,
@@ -135,7 +135,7 @@ export const main = handler(async () => {
               UpdateExpression:
                 "SET products_from_order = :products_from_order",
               ExpressionAttributeValues: {
-                ":products_from_order": productsToAdd,
+                ":products_from_order": uniqueProducts,
               },
               ReturnValues: "ALL_NEW",
             };
@@ -147,5 +147,5 @@ export const main = handler(async () => {
     }
   }
 
-  return { orders, products, practices };
+  return { orders, products, practicesList };
 }, true);

@@ -46,3 +46,13 @@ export const GenerateImageBuffer = async (imageGallery) => {
 
   return imageGalleryArray;
 };
+
+export const FormatURL = (url) => {
+  const prefix = "https://";
+  if (!url || url === prefix) return "";
+
+  if (!/^https?:\/\//i.test(url)) {
+    url = prefix + url;
+  }
+  return url;
+};

@@ -31,6 +31,7 @@ provider:
     webhook_verify_hash_retail: ${env:SHOPIFY_WEBHOOK_VERIFY_HASH_RETAIL}
     services_and_treatments_table: dryeye-services-and-treatments
     wholesale_orders_table: ${env:TABLE_WHOLESALE_ORDERS}
+    insurances_table: ${env:TABLE_INSURANCES}
     refersion_host: ${env:REFERSION_HOST}
     refersion_graphql_host: ${env:REFERSION_GRAPHQL_HOST}
     refersion_graphql_api_key: ${env:REFERSION_GRAPHQL_KEY}
@@ -340,6 +341,39 @@ functions:
     events:
       - http:
           path: services-and-treatments
+          method: delete
+          cors: true
+  # ENSURANCES
+  insurances-list:
+    handler: handlers/insurances/list.main
+    timeout: 80
+    events:
+      - http:
+          path: insurances
+          method: get
+          cors: true
+  insurances-create:
+    handler: handlers/insurances/create.main
+    timeout: 80
+    events:
+      - http:
+          path: insurances
+          method: post
+          cors: true
+  insurances-update:
+    handler: handlers/insurances/update.main
+    timeout: 80
+    events:
+      - http:
+          path: insurances
+          method: put
+          cors: true
+  insurances-delete:
+    handler: handlers/insurances/delete.main
+    timeout: 80
+    events:
+      - http:
+          path: insurances
           method: delete
           cors: true
   # REFERSION

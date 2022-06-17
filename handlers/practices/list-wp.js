@@ -59,8 +59,14 @@ export const main = handler(async () => {
   const servicesParams = {
     TableName: process.env.services_and_treatments_table,
   };
+  const ensurancesParams = {
+    TableName: process.env.insurances_table,
+  };
+
   const servicesResponse = await dynamoDb.scan(servicesParams);
   const services = servicesResponse.Items;
+  const ensurancesResponse = await dynamoDb.scan(ensurancesParams);
+  const ensurancesList = ensurancesResponse.Items;
 
   // Format Tests
   formattedItems = formattedItems.map((practice) => {
@@ -129,6 +135,27 @@ export const main = handler(async () => {
       );
       const newPractice = {
         eyeCareServices: filteredServices,
+        ...restOfPractice,
+      };
+      return newPractice;
+    }
+    return practice;
+  });
+
+  // Format Ensurances
+  formattedItems = formattedItems.map((practice) => {
+    const { ensurances, ...restOfPractice } = practice;
+    if (ensurances) {
+      let formattedEsurances = ensurances.map((ensurance) => {
+        const currentEnsurance = ensurancesList.filter(
+          (ensuranceDefinition) => ensuranceDefinition.id === ensurance
+        );
+        return currentEnsurance && currentEnsurance.length === 1
+          ? currentEnsurance[0].label
+          : "";
+      });
+      const newPractice = {
+        ensurances: formattedEsurances,
         ...restOfPractice,
       };
       return newPractice;

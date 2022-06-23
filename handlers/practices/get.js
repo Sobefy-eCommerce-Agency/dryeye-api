@@ -19,8 +19,14 @@ export const main = handler(async (event) => {
   // Check if the practice is active
   if (hasResult) {
     const currentPractice = Items[0];
-    const { active, practice, dryEyeTreatments, eyeCareServices, tests } =
-      currentPractice;
+    const {
+      active,
+      practice,
+      dryEyeTreatments,
+      eyeCareServices,
+      tests,
+      insurances,
+    } = currentPractice;
     if (active !== false) practiceRequested = currentPractice;
 
     // Add doctors
@@ -99,6 +105,32 @@ export const main = handler(async (event) => {
       practiceRequested.practiceTreatments = practiceTreatments;
       practiceRequested.practiceServices = practiceServices;
       practiceRequested.practiceTests = practiceTests;
+    }
+
+    // Add insurances definition
+    if (insurances && insurances.length > 0) {
+      const insuranceDefinitionParams = {
+        TableName: process.env.insurances_table,
+      };
+      const insuranceDefinitionResult = await dynamoDb.scan(
+        insuranceDefinitionParams
+      );
+
+      if (
+        insuranceDefinitionResult &&
+        insuranceDefinitionResult.Items.length > 0
+      ) {
+        let practiceInsurances = [];
+        insurances.forEach((insurance) => {
+          const insuranceDefinition = insuranceDefinitionResult.Items.filter(
+            (insuranceDef) => insuranceDef.id === insurance
+          );
+          if (insuranceDefinition.length === 1) {
+            practiceInsurances.push(insuranceDefinition[0].label);
+          }
+        });
+        practiceRequested.practiceInsurances = practiceInsurances;
+      }
     }
   }
   return practiceRequested;

@@ -142,20 +142,20 @@ export const main = handler(async () => {
     return practice;
   });
 
-  // Format Ensurances
+  // Format Insurances
   formattedItems = formattedItems.map((practice) => {
-    const { ensurances, ...restOfPractice } = practice;
-    if (ensurances) {
-      let formattedEsurances = ensurances.map((ensurance) => {
-        const currentEnsurance = ensurancesList.filter(
-          (ensuranceDefinition) => ensuranceDefinition.id === ensurance
+    const { insurances, ...restOfPractice } = practice;
+    if (insurances) {
+      let formattedInsurances = insurances.map((insurance) => {
+        const currentInsurance = ensurancesList.filter(
+          (insuranceDefinition) => insuranceDefinition.id === insurance
         );
-        return currentEnsurance && currentEnsurance.length === 1
-          ? currentEnsurance[0].label
+        return currentInsurance && currentInsurance.length === 1
+          ? currentInsurance[0].label
           : "";
       });
       const newPractice = {
-        ensurances: formattedEsurances,
+        insurances: formattedInsurances,
         ...restOfPractice,
       };
       return newPractice;

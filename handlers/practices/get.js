@@ -132,6 +132,13 @@ export const main = handler(async (event) => {
         practiceRequested.practiceInsurances = practiceInsurances;
       }
     }
+
+    // Add featured image
+    practiceRequested.featured_image =
+      practiceRequested.imageGallery &&
+      practiceRequested.imageGallery.length > 0
+        ? practiceRequested.imageGallery[0]
+        : "";
   }
   return practiceRequested;
 }, true);

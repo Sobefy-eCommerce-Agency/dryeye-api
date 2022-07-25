@@ -48,12 +48,14 @@ export const main = handler(async (event) => {
     email: customerEmail,
     note_attributes,
     customer,
+    billing_address,
     name: orderName,
   } = data;
 
   // Check if the note_attributes are valid
   if (note_attributes && Array.isArray(note_attributes)) {
-    console.log("ORDER CREATION - NOTe AttRIBUTES VALID");
+    console.log("ORDER CREATION - NOTE ATTRIBUTES VALID");
+    console.log(data);
     const practiceIDAttribute = note_attributes.filter(
       (attribute) => attribute.name === "practice-id"
     );
@@ -218,7 +220,11 @@ export const main = handler(async (event) => {
               createdTrigger,
               createdTriggerType
             );
-            if (deletedConversionTrigger.status === 200) {
+            if (
+              deletedConversionTrigger &&
+              deletedConversionTrigger.status &&
+              deletedConversionTrigger.status === 200
+            ) {
               console.log("ORDER CREATION - TRIGGER REMOVED");
               // Remove trigger from database
               const triggersTableParams = {
@@ -270,6 +276,68 @@ export const main = handler(async (event) => {
         };
         await dynamoDb.put(params);
         return 200;
+      }
+    }
+
+    // Patience creation
+    if (practiceID) {
+      const practiceParams = {
+        TableName: process.env.practices_table,
+        KeyConditionExpression: "practice = :practiceId",
+        ExpressionAttributeValues: {
+          ":practiceId": practiceID,
+        },
+      };
+      const result = await dynamoDb.query(practiceParams);
+      const { Items } = result;
+      const selectedPractice = Items && Items.length === 1 ? Items[0] : null;
+
+      if (selectedPractice) {
+        // Get parients for the current customer
+        const customerID = selectedPractice.doctor;
+        const getPatientsParams = {
+          TableName: process.env.patients_table,
+          KeyConditionExpression: "#userAttribute = :user",
+          ExpressionAttributeNames: {
+            "#userAttribute": "user",
+          },
+          ExpressionAttributeValues: {
+            ":user": customerID,
+          },
+        };
+        const patientsResponse = await dynamoDb.query(getPatientsParams);
+        const patients = patientsResponse.Items;
+
+        // Check if the customer has a patient with the same email address
+        let includesCurrentPatient = false;
+        if (patients && patients.length > 0) {
+          const filteredPatients = patients.filter(
+            (patient) => patient.email === customer.email
+          );
+          includesCurrentPatient = filteredPatients.length > 0;
+        }
+
+        if (!includesCurrentPatient) {
+          const putPatientParams = {
+            TableName: process.env.patients_table,
+            Item: {
+              firstName: billing_address.first_name,
+              lastName: billing_address.last_name,
+              email: customer.email,
+              phone: billing_address.phone,
+              address: billing_address.address1,
+              address2: billing_address.address2,
+              city: billing_address.city,
+              state: billing_address.province,
+              zip: billing_address.zip,
+              birthdate: "1999-11-11",
+              user: customerID,
+              patient: uuid.v1(),
+              createdAt: Date.now(),
+            },
+          };
+          await dynamoDb.put(putPatientParams);
+        }
       }
     }
   }

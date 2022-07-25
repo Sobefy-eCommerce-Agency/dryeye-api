@@ -201,6 +201,12 @@ export const main = handler(async () => {
       };
       return newPractice;
     }
+
+    // format image
+    practice.featured_image =
+      practice.imageGallery && practice.imageGallery.length > 0
+        ? practice.imageGallery[0]
+        : "";
     return practice;
   });
 

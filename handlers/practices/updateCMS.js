@@ -35,6 +35,7 @@ export const main = handler(async (event) => {
     latitude,
     longitude,
     practice_image,
+    insurances,
   } = data;
   const params = {
     TableName: process.env.practices_table,
@@ -43,7 +44,7 @@ export const main = handler(async (event) => {
       doctor,
     },
     UpdateExpression:
-      "SET #nameAttr = :name, phone = :phone, phone_tracking_number = :phone_tracking_number, email = :email, website = :website, facebook_url = :facebook_url, instagram_url = :instagram_url, twitter_url = :twitter_url, monday_op_hours = :monday_op_hours, tuesday_op_hours = :tuesday_op_hours, wednesday_op_hours = :wednesday_op_hours, thursday_op_hours = :thursday_op_hours, friday_op_hours = :friday_op_hours, saturday_op_hours = :saturday_op_hours, sunday_op_hours = :sunday_op_hours, address = :address, #routeAttr = :route, street_number = :street_number, suite_number = :suite_number, city = :city, county = :county, #stateAttr = :state, state_short = :state_short, country = :country, country_short = :country_short, zip = :zip, latitude = :latitude, longitude = :longitude, practice_image = :practice_image",
+      "SET #nameAttr = :name, phone = :phone, phone_tracking_number = :phone_tracking_number, email = :email, website = :website, facebook_url = :facebook_url, instagram_url = :instagram_url, twitter_url = :twitter_url, monday_op_hours = :monday_op_hours, tuesday_op_hours = :tuesday_op_hours, wednesday_op_hours = :wednesday_op_hours, thursday_op_hours = :thursday_op_hours, friday_op_hours = :friday_op_hours, saturday_op_hours = :saturday_op_hours, sunday_op_hours = :sunday_op_hours, address = :address, #routeAttr = :route, street_number = :street_number, suite_number = :suite_number, city = :city, county = :county, #stateAttr = :state, state_short = :state_short, country = :country, country_short = :country_short, zip = :zip, latitude = :latitude, longitude = :longitude, practice_image = :practice_image, insurances = :insurances",
     ExpressionAttributeNames: {
       "#nameAttr": "name",
       "#stateAttr": "state",
@@ -79,6 +80,7 @@ export const main = handler(async (event) => {
       ":latitude": latitude ? parseFloat(latitude) : "",
       ":longitude": longitude ? parseFloat(longitude) : "",
       ":practice_image": practice_image || "",
+      ":insurances": insurances || [],
     },
     ReturnValues: "ALL_NEW",
   };

@@ -1,6 +1,5 @@
 import handler from "../../libs/handler-lib";
 import dynamoDb from "../../libs/dynamodb-lib";
-import { FormatURL } from "../../utils/utils";
 
 export const main = handler(async () => {
   const params = {
@@ -26,9 +25,7 @@ export const main = handler(async () => {
   if (practicesResult && practicesResult.Items.length > 0) {
     for (let i = 0; i < practicesResult.Items.length; i++) {
       const currentPractice = practicesResult.Items[i];
-      const { practice, doctor, website } = currentPractice;
-
-      const formattedWebsite = FormatURL(website);
+      const { practice, doctor } = currentPractice;
 
       const updateParams = {
         TableName: process.env.practices_table,
@@ -36,9 +33,9 @@ export const main = handler(async () => {
           practice,
           doctor,
         },
-        UpdateExpression: "SET website = :website",
+        UpdateExpression: "SET phone_tracking_number = :phone_tracking_number",
         ExpressionAttributeValues: {
-          ":website": formattedWebsite,
+          ":phone_tracking_number": "",
         },
         ReturnValues: "ALL_NEW",
       };
